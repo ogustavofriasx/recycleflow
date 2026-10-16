@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/recycleflow-logo" alt="Logo do RecycleFlow" width="280" />
+  <img src="assets/recycleflow-logo.png" alt="Logo do RecycleFlow" width="280" />
 
 RecycleFlow
   Informação acessível para reciclar e descartar resíduos corretamente.
