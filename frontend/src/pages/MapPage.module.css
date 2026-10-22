@@ -1,0 +1,20 @@
+.page {
+  display: flex; align-items: stretch; gap: 16px;
+  padding: 28px 21px 28px 0;
+}
+.panel {
+  flex-shrink: 0; width: 450px;
+  display: flex; flex-direction: column; gap: 20px;
+  padding: 28px;
+  padding-top: 80px;
+}
+.chips { gap: 23px; padding: 30px 0 20px; }
+.list { display: flex; flex-direction: column; }
+.empty { font-size: 14px; color: var(--text-gray); padding: 16px 0; }
+.mapArea { flex: 1; min-width: 0; height: 882px; }
+
+@media (max-width: 1000px) {
+  .page { flex-direction: column; padding: 0 0 24px; }
+  .panel { width: 100%; padding: 24px var(--page-x); }
+  .mapArea { height: 520px; padding: 0 var(--page-x); }
+}

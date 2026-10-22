@@ -1,0 +1,16 @@
+.field {
+  height: 56px; width: 100%;
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 22px;
+  background: #fff;
+  border: 1.5px solid var(--border-input);
+  border-radius: 14px;
+  cursor: text;
+  transition: border-color .15s;
+}
+.field:focus-within { border-color: var(--blue-primary); }
+.input {
+  flex: 1; min-width: 0; border: 0; outline: 0; background: transparent;
+  font-size: 14px; color: var(--text-dark);
+}
+.input::placeholder { color: var(--text-gray); }

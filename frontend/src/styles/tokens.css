@@ -1,0 +1,20 @@
+/* Design tokens extraídos das variáveis do Figma (RecycleFlow - Protótipo) */
+:root {
+  --blue-primary: #087ccc;
+  --green-accent: #53bc22;
+  --purple-accent: #8b5cf6;
+  --text-dark: #1f2937;
+  --text-gray: #6b7280;
+  --base-white: #fffefe;
+  --bg-light: #f3f6f9;
+  --bg-blue-light: #e6f1fb;
+  --bg-green-light: #eaf7e0;
+  --bg-footer: #0f2a3d;
+  --footer-link: #b8c7d1;
+  --border-default: #e5e9ef;
+  --border-strong: #b1b6be;
+  --border-input: #e5e8f0;
+
+  --page-x: 64px;
+  --font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}

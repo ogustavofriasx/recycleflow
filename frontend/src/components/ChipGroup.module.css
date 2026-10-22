@@ -1,0 +1,10 @@
+.group { display: flex; flex-wrap: wrap; gap: 10px; }
+.chip {
+  min-width: 110px; height: 50px; padding: 9px 18px;
+  border-radius: 999px;
+  background: var(--bg-light); color: var(--text-dark);
+  font-size: 13px; font-weight: 700; white-space: nowrap;
+  transition: background .15s, color .15s;
+}
+.chip:hover { background: var(--bg-blue-light); }
+.active, .active:hover { background: var(--blue-primary); color: var(--base-white); }

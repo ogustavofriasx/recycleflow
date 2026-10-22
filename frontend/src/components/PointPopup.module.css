@@ -1,0 +1,39 @@
+.popup {
+  width: 415px; max-width: calc(100% - 32px);
+  background: var(--base-white);
+  border-radius: 50px;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(15, 42, 61, 0.22);
+}
+.header {
+  position: relative;
+  height: 94px;
+  background: var(--blue-primary);
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 44px;
+}
+.title { font-size: 32px; font-weight: 700; color: var(--base-white); text-align: center; line-height: 1.15; }
+.close {
+  position: absolute; right: 14px; top: 10px;
+  width: 28px; height: 28px; border-radius: 50%;
+  color: #fff; font-size: 22px; line-height: 1; opacity: .85;
+}
+.close:hover { background: rgba(255,255,255,.18); }
+.body { display: flex; flex-direction: column; gap: 11px; padding: 31px 13px 20px; }
+.addressRow { display: flex; align-items: center; gap: 15px; padding: 0 24px 0 24px; margin-bottom: 20px; }
+.pinBox {
+  flex-shrink: 0; width: 53px; height: 49px; border-radius: 11px;
+  background: var(--bg-blue-light);
+  display: flex; align-items: center; justify-content: center;
+}
+.address { flex: 1; font-size: 20px; font-weight: 700; color: #000; text-align: center; }
+.pill {
+  min-height: 53px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 8px 6px;
+  border: 1px solid var(--border-strong);
+  border-radius: 50px;
+  background: var(--base-white);
+  font-size: 18px; font-weight: 700; color: #000; text-align: center;
+}
+.pillTall { min-height: 77px; padding: 8px 36px; }

@@ -1,0 +1,72 @@
+/* Hero */
+.hero {
+  position: relative;
+  height: 482px;
+  display: flex; align-items: center;
+  padding: 80px var(--page-x);
+  overflow: hidden;
+}
+.heroBg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+.heroText { position: relative; display: flex; flex-direction: column; gap: 20px; }
+.heroTitle { font-size: 40px; font-weight: 700; color: var(--text-dark); max-width: 560px; }
+.heroSubtitle { font-size: 16px; color: var(--text-gray); max-width: 480px; }
+.actions { display: flex; gap: 14px; flex-wrap: wrap; }
+
+/* Como podemos ajudar */
+.quick { display: flex; flex-direction: column; gap: 32px; padding: 56px var(--page-x) 24px; }
+.quickGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; align-items: start; }
+.qCard {
+  display: flex; flex-direction: column; gap: 14px;
+  padding: 32px 28px;
+  background: var(--bg-light);
+  border-radius: 18px;
+  transition: transform .15s, box-shadow .15s;
+}
+.qCard:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(31, 41, 55, .08); }
+.qIcon { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; }
+.qTitle { font-size: 17px; font-weight: 700; color: var(--text-dark); }
+.qText { font-size: 13px; color: var(--text-gray); max-width: 260px; }
+
+/* Pontos de coleta */
+.points { display: flex; flex-direction: column; gap: 32px; padding: 32px var(--page-x) 24px; }
+.pointsHeader { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.seeAll { font-size: 14px; font-weight: 700; color: var(--blue-primary); white-space: nowrap; }
+.seeAll:hover { text-decoration: underline; }
+.pointsBody { display: flex; gap: 40px; align-items: flex-start; }
+.pointsList { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.mapPreview {
+  flex-shrink: 0; width: 640px; height: 340px;
+  border: 1px solid var(--border-default); border-radius: 20px; overflow: hidden;
+}
+.mapPreview img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s; }
+.mapPreview:hover img { transform: scale(1.02); }
+
+/* Dicas */
+.tips { display: flex; flex-direction: column; gap: 32px; padding: 32px var(--page-x) 64px; }
+.tipsGrid { display: flex; gap: 24px; flex-wrap: wrap; }
+.tip {
+  width: 420px; min-height: 120px;
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 30px 22px;
+  background: var(--base-white);
+  border: 1px solid var(--border-strong);
+  border-radius: 16px;
+}
+.tipIcon {
+  flex-shrink: 0; width: 75px; height: 69px; border-radius: 10px;
+  background: var(--bg-green-light);
+  display: flex; align-items: center; justify-content: center;
+}
+.tipText { font-size: 16px; color: var(--text-gray); max-width: 260px; }
+
+@media (max-width: 1200px) {
+  .pointsBody { flex-direction: column; }
+  .mapPreview { width: 100%; }
+  .tip { width: 100%; }
+}
+@media (max-width: 900px) {
+  .hero { height: auto; padding: 56px var(--page-x); }
+  .heroTitle { font-size: 30px; }
+  .quickGrid { grid-template-columns: 1fr; }
+  .mapPreview { height: 240px; }
+}
