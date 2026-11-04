@@ -1,6 +1,6 @@
 import styles from './PointPopup.module.css';
 
-/** Card flutuante do ponto (Figma: "menu_flutuante"). Futuramente vira o popup do marcador no Leaflet. */
+/** Card flutuante do ponto (Figma: "menu_flutuante"), mostrado por cima do mapa (MapView). */
 export default function PointPopup({ point, onClose }) {
   // Sem ponto selecionado não renderiza nada
   if (!point) return null;
@@ -21,6 +21,9 @@ export default function PointPopup({ point, onClose }) {
         </div>
         <p className={styles.pill}>Horário de funcionamento: {point.hours}</p>
         <p className={`${styles.pill} ${styles.pillTall}`}>Materiais: {point.materialsLabel}</p>
+        {/* Avisos vindos do banco: observação de horário e ponto ainda sem coordenada */}
+        {point.hoursNote && <p className={styles.note}>{point.hoursNote}</p>}
+        {point.position === null && <p className={styles.note}>Localização no mapa ainda não cadastrada.</p>}
       </div>
     </div>
   );

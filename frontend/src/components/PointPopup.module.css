@@ -37,3 +37,4 @@
   font-size: 18px; font-weight: 700; color: #000; text-align: center;
 }
 .pillTall { min-height: 77px; padding: 8px 36px; }
+.note { font-size: 13px; color: var(--text-gray); text-align: center; padding: 0 24px; }
