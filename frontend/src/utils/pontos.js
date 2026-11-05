@@ -32,6 +32,13 @@ export function formatarHorarios(horarios) {
     .join(' · ');
 }
 
+// 850 -> "850 m"; 2340 -> "2,3 km"
+export function formatarDistancia(metros) {
+  if (metros == null) return '';
+  if (metros < 1000) return `${Math.round(metros / 10) * 10} m`;
+  return `${(metros / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 1 })} km`;
+}
+
 export function toPoint(p) {
   const rua = [p.logradouro, p.numero].filter(Boolean).join(', ');
   const temCoordenada = p.latitude != null && p.longitude != null;
@@ -43,7 +50,7 @@ export function toPoint(p) {
     address: [rua, p.bairro].filter(Boolean).join(' - '),
     fullAddress: [rua, p.complemento, p.bairro].filter(Boolean).join(' - '),
     bairro: p.bairro,
-    distance: '', // etapa 7 (pontos próximos ao usuário)
+    distance: formatarDistancia(p.distancia_m), // só vem quando a consulta tem lat/lng
     hours: formatarHorarios(p.horarios) ?? p.horario_descricao ?? 'Não informado',
     hoursNote: p.horario_descricao,
     materialsLabel: p.materiais.length ? p.materiais.map((m) => m.nome).join(', ') : 'Não informado',

@@ -1,13 +1,41 @@
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import Button from '../components/Button.jsx';
+import LocationBar from '../components/LocationBar.jsx';
+import MapView from '../components/MapView.jsx';
 import PointItem from '../components/PointItem.jsx';
 import { quickAccess, tips } from '../data/home.js';
-import { points } from '../data/points.js';
+import useUserLocation, { toLatLngParams } from '../hooks/useUserLocation.js';
+import { listarPontosColeta } from '../services/api.js';
+import { toPoint } from '../utils/pontos.js';
 import styles from './Home.module.css';
 
+// Quantos pontos aparecem na lista da Home
+const PONTOS_NA_HOME = 3;
+
 export default function Home() {
-  // Na Home só mostra os 3 pontos do protótipo (o Jardim Figueira aparece só na tela do Mapa)
-  const nearby = points.filter((p) => !p.mapOnly);
+  const navigate = useNavigate();
+  const [points, setPoints] = useState([]);
+  const [status, setStatus] = useState('loading'); // loading | ok | error
+  const location = useUserLocation();
+  const userPosition = location.position;
+
+  // Com o local do usuário, a API já devolve do mais próximo para o mais distante
+  useEffect(() => {
+    const ctrl = new AbortController();
+    listarPontosColeta(toLatLngParams(userPosition), ctrl.signal)
+      .then((lista) => {
+        setPoints(lista.map(toPoint));
+        setStatus('ok');
+      })
+      .catch((e) => {
+        if (e.name !== 'AbortError') setStatus('error');
+      });
+    return () => ctrl.abort();
+  }, [userPosition]);
+
+  // Sem local: os 3 primeiros em ordem alfabética
+  const nearby = points.slice(0, PONTOS_NA_HOME);
 
   return (
     <>
@@ -46,16 +74,20 @@ export default function Home() {
           <h2 className="section-title">Pontos de coleta próximos</h2>
           <Link to="/mapa" className={styles.seeAll}>Ver mapa completo ›</Link>
         </div>
+        <LocationBar location={location} />
         <div className={styles.pointsBody}>
           <div className={styles.pointsList}>
+            {status === 'loading' && <p className={styles.pointsEmpty}>Carregando pontos...</p>}
+            {status === 'error' && <p className={styles.pointsEmpty}>Não foi possível carregar os pontos agora.</p>}
             {nearby.map((p, i) => (
               // divider só a partir do 2º item, pra não ter linha em cima do primeiro
-              <PointItem key={p.id} point={p} divider={i > 0} />
+              <PointItem key={p.id} point={p} divider={i > 0} onClick={() => navigate('/mapa')} />
             ))}
           </div>
-          <Link to="/mapa" className={styles.mapPreview} aria-label="Abrir mapa completo">
-            <img src="/assets/map-preview.png" alt="Prévia do mapa de pontos de coleta" />
-          </Link>
+          {/* Mapa real com todos os pontos; clicar num pino abre o mapa completo */}
+          <div className={styles.mapPreview}>
+            <MapView points={points} selectedId={null} onSelect={() => navigate('/mapa')} userPosition={userPosition} />
+          </div>
         </div>
       </section>
 

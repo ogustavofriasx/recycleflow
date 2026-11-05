@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import ChipGroup from '../components/ChipGroup.jsx';
+import LocationBar from '../components/LocationBar.jsx';
 import MapView from '../components/MapView.jsx';
 import PointItem from '../components/PointItem.jsx';
 import PointPopup from '../components/PointPopup.jsx';
 import SearchInput from '../components/SearchInput.jsx';
+import useUserLocation, { toLatLngParams } from '../hooks/useUserLocation.js';
 import { buscarMateriais, listarPontosColeta } from '../services/api.js';
 import { toPoint } from '../utils/pontos.js';
 import styles from './MapPage.module.css';
@@ -26,6 +28,8 @@ export default function MapPage() {
   const [error, setError] = useState(null);
   const [query, setQuery] = useState('');
   const [selectedId, setSelectedId] = useState(null);
+  const location = useUserLocation();
+  const [picking, setPicking] = useState(false); // modo "escolher no mapa"
 
   // Opções dos filtros (uma vez)
   useEffect(() => {
@@ -41,11 +45,13 @@ export default function MapPage() {
     return () => ctrl.abort();
   }, []);
 
-  // Pontos filtrados pela API sempre que material, bairro ou tipo mudam
+  // Pontos filtrados pela API sempre que material, bairro, tipo ou o local do usuário mudam.
+  // Com local, a API devolve a distância e ordena do mais próximo para o mais distante.
+  const userPosition = location.position;
   useEffect(() => {
     const ctrl = new AbortController();
     setLoading(true);
-    listarPontosColeta({ material, bairro, tipo }, ctrl.signal)
+    listarPontosColeta({ material, bairro, tipo, ...toLatLngParams(userPosition) }, ctrl.signal)
       .then((lista) => {
         setPoints(lista.map(toPoint));
         setError(null);
@@ -58,7 +64,7 @@ export default function MapPage() {
         }
       });
     return () => ctrl.abort();
-  }, [material, bairro, tipo]);
+  }, [material, bairro, tipo, userPosition]);
 
   const typeOptions = useMemo(() => {
     const tipos = [...new Set(allPoints.map((p) => p.typeLabel))].sort(byName);
@@ -108,6 +114,8 @@ export default function MapPage() {
           placeholder="Buscar por nome ou endereço"
           aria-label="Buscar por nome ou endereço"
         />
+
+        <LocationBar location={location} picking={picking} onTogglePick={() => setPicking((v) => !v)} />
 
         <div className={styles.filters}>
           <label className={styles.field}>
@@ -168,7 +176,21 @@ export default function MapPage() {
       </aside>
 
       <div className={styles.mapArea}>
-        <MapView points={filtered} selectedId={selectedId} onSelect={setSelectedId} notice={notice}>
+        <MapView
+          points={filtered}
+          selectedId={selectedId}
+          onSelect={setSelectedId}
+          notice={notice}
+          userPosition={userPosition}
+          onMapClick={
+            picking
+              ? (pos) => {
+                  location.setManualLocation(pos);
+                  setPicking(false);
+                }
+              : undefined
+          }
+        >
           {selected && <PointPopup point={selected} onClose={() => setSelectedId(null)} />}
         </MapView>
       </div>

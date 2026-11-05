@@ -36,10 +36,10 @@
 .pointsList { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .mapPreview {
   flex-shrink: 0; width: 640px; height: 340px;
-  border: 1px solid var(--border-default); border-radius: 20px; overflow: hidden;
+  border-radius: 20px; overflow: hidden;
+  --map-min-height: 0; /* deixa o MapView ocupar só a altura do card */
 }
-.mapPreview img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s; }
-.mapPreview:hover img { transform: scale(1.02); }
+.pointsEmpty { font-size: 14px; color: var(--text-gray); padding: 16px 0; }
 
 /* Dicas */
 .tips { display: flex; flex-direction: column; gap: 32px; padding: 32px var(--page-x) 64px; }

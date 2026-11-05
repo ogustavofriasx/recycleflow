@@ -19,3 +19,6 @@ export const obterMaterial = (id, signal) => get(`/materiais/${id}`, {}, signal)
 // Pontos de coleta ativos, com coordenadas, horários e materiais aceitos.
 // filtros: { material: id_material, bairro: 'Cervezão', tipo: 'Ecoponto' } (todos opcionais)
 export const listarPontosColeta = (filtros = {}, signal) => get('/pontos-coleta/', filtros, signal);
+
+// Projetos e iniciativas publicados, com a instituição responsável
+export const listarProjetos = (signal) => get('/projetos/', {}, signal);

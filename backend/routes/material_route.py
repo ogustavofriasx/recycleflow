@@ -6,6 +6,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from db.database import get_db
+from schemas import Erro, Material, MaterialDetalhe
 
 router = APIRouter(prefix="/materiais", tags=["Materiais"])
 
@@ -36,7 +37,13 @@ def erro_banco(erro: SQLAlchemyError):
     raise HTTPException(status_code=500, detail="Erro ao consultar o banco de dados")
 
 
-@router.get("/")
+@router.get(
+    "/",
+    response_model=list[Material],
+    summary="Buscar materiais",
+    description="Sem `busca`, lista todos. Com `busca`, procura no nome e nas palavras-chave, "
+    "sem diferenciar maiúsculas e acentos (`remedio` encontra *Medicamentos*).",
+)
 def listar_materiais(
     busca: Optional[str] = Query(None, max_length=100, description="Texto buscado no nome e nas palavras-chave"),
     categoria: Optional[int] = Query(None, description="id_categoria"),
@@ -60,12 +67,18 @@ def listar_materiais(
     """)
     try:
         result = db.execute(query, {"busca": busca, "categoria": categoria, "incluir_demo": incluir_demo})
-        return result.mappings().all()
+        return [dict(r) for r in result.mappings()]
     except SQLAlchemyError as erro:
         erro_banco(erro)
 
 
-@router.get("/{id_material}")
+@router.get(
+    "/{id_material}",
+    response_model=MaterialDetalhe,
+    responses={404: {"model": Erro}},
+    summary="Detalhar um material",
+    description="Orientações de descarte e os pontos de coleta que aceitam o material.",
+)
 def detalhar_material(id_material: int, db: Session = Depends(get_db)):
     query_material = text(f"""
         SELECT {CAMPOS_MATERIAL}
@@ -90,6 +103,6 @@ def detalhar_material(id_material: int, db: Session = Depends(get_db)):
         if material is None:
             raise HTTPException(status_code=404, detail="Material não encontrado")
         pontos = db.execute(query_pontos, {"id": id_material}).mappings().all()
-        return {**material, "pontos": pontos}
+        return {**material, "pontos": [dict(p) for p in pontos]}
     except SQLAlchemyError as erro:
         erro_banco(erro)
