@@ -22,3 +22,7 @@ export const listarPontosColeta = (filtros = {}, signal) => get('/pontos-coleta/
 
 // Projetos e iniciativas publicados, com a instituição responsável
 export const listarProjetos = (signal) => get('/projetos/', {}, signal);
+
+// Conteúdos publicados (artigos, curiosidades e dicas); opcionalmente filtrados por tipo.
+export const listarConteudos = (params = {}, signal) => get('/conteudos/', params, signal);
+export const obterConteudo = (slug, signal) => get(`/conteudos/${encodeURIComponent(slug)}`, {}, signal);

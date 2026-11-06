@@ -107,16 +107,16 @@ export default function MapPage() {
 
   return (
     <div className={styles.page}>
-      <aside className={styles.panel}>
-        <SearchInput
-          value={query}
-          onChange={setQuery}
-          placeholder="Buscar por nome ou endereço"
-          aria-label="Buscar por nome ou endereço"
-        />
-
-        <LocationBar location={location} picking={picking} onTogglePick={() => setPicking((v) => !v)} />
-
+      <section className={styles.controls} aria-label="Busca e filtros">
+        <div className={styles.controlTop}>
+          <SearchInput
+            value={query}
+            onChange={setQuery}
+            placeholder="Buscar por nome ou endereço"
+            aria-label="Buscar por nome ou endereço"
+          />
+          <LocationBar location={location} picking={picking} onTogglePick={() => setPicking((v) => !v)} />
+        </div>
         <div className={styles.filters}>
           <label className={styles.field}>
             <span className={styles.fieldLabel}>Material</span>
@@ -136,63 +136,72 @@ export default function MapPage() {
               ))}
             </select>
           </label>
+          <div className={styles.typeFilter}>
+            <span className={styles.fieldLabel}>Tipo de ponto</span>
+            <ChipGroup
+              options={typeOptions}
+              value={tipo}
+              onChange={(v) => setFilter('tipo', v)}
+              label="Tipo de ponto"
+              className={styles.chips}
+            />
+          </div>
         </div>
+      </section>
 
-        <ChipGroup
-          options={typeOptions}
-          value={tipo}
-          onChange={(v) => setFilter('tipo', v)}
-          label="Tipo de ponto"
-          className={styles.chips}
-        />
+      <div className={styles.results}>
+        <aside className={styles.panel}>
+          <div className={styles.resultHeader}>
+            <h1 className={styles.heading}>Pontos de coleta</h1>
+            <div className={styles.resultBar}>
+              <span className={styles.count}>
+                {loading ? 'Carregando...' : `${filtered.length} ponto(s) encontrado(s)`}
+              </span>
+              {hasFilters && (
+                <button type="button" className={styles.clear} onClick={clearFilters}>Limpar filtros</button>
+              )}
+            </div>
+          </div>
 
-        <div className={styles.resultBar}>
-          <span className={styles.count}>
-            {loading ? 'Carregando...' : `${filtered.length} ponto(s) encontrado(s)`}
-          </span>
-          {hasFilters && (
-            <button type="button" className={styles.clear} onClick={clearFilters}>Limpar filtros</button>
-          )}
+          <div className={styles.list}>
+            {error ? (
+              <p className={styles.empty}>{error}</p>
+            ) : !loading && !filtered.length ? (
+              <p className={styles.empty}>Nenhum ponto encontrado com esses filtros.</p>
+            ) : (
+              filtered.map((p, i) => (
+                <PointItem
+                  key={p.id}
+                  point={p}
+                  divider={i > 0}
+                  selected={p.id === selectedId}
+                  // Clicar de novo no mesmo ponto fecha o card
+                  onClick={() => setSelectedId(p.id === selectedId ? null : p.id)}
+                />
+              ))
+            )}
+          </div>
+        </aside>
+
+        <div className={styles.mapArea}>
+          <MapView
+            points={filtered}
+            selectedId={selectedId}
+            onSelect={setSelectedId}
+            notice={notice}
+            userPosition={userPosition}
+            onMapClick={
+              picking
+                ? (pos) => {
+                    location.setManualLocation(pos);
+                    setPicking(false);
+                  }
+                : undefined
+            }
+          >
+            {selected && <PointPopup point={selected} onClose={() => setSelectedId(null)} />}
+          </MapView>
         </div>
-
-        <div className={styles.list}>
-          {error ? (
-            <p className={styles.empty}>{error}</p>
-          ) : !loading && !filtered.length ? (
-            <p className={styles.empty}>Nenhum ponto encontrado com esses filtros.</p>
-          ) : (
-            filtered.map((p, i) => (
-              <PointItem
-                key={p.id}
-                point={p}
-                divider={i > 0}
-                selected={p.id === selectedId}
-                // Clicar de novo no mesmo ponto fecha o card
-                onClick={() => setSelectedId(p.id === selectedId ? null : p.id)}
-              />
-            ))
-          )}
-        </div>
-      </aside>
-
-      <div className={styles.mapArea}>
-        <MapView
-          points={filtered}
-          selectedId={selectedId}
-          onSelect={setSelectedId}
-          notice={notice}
-          userPosition={userPosition}
-          onMapClick={
-            picking
-              ? (pos) => {
-                  location.setManualLocation(pos);
-                  setPicking(false);
-                }
-              : undefined
-          }
-        >
-          {selected && <PointPopup point={selected} onClose={() => setSelectedId(null)} />}
-        </MapView>
       </div>
     </div>
   );

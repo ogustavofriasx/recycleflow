@@ -7,6 +7,7 @@ const links = [
   { to: '/materiais', label: 'Materiais' },
   { to: '/mapa', label: 'Mapa' },
   { to: '/projetos', label: 'Projetos' },
+  { to: '/conteudos', label: 'Conteúdos' },
 ];
 
 export default function Navbar() {

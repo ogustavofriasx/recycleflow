@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException
+from typing import Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
@@ -20,15 +22,21 @@ def erro_banco(erro: SQLAlchemyError):
     summary="Listar conteúdos educativos",
     description="Conteúdos **publicados**, sem o texto completo (use `/conteudos/{slug}`).",
 )
-def listar_conteudos(db: Session = Depends(get_db)):
+def listar_conteudos(
+    tipo: Optional[str] = Query(None, max_length=40, description="Filtra por tipo, ex.: artigo, curiosidade, dica"),
+    db: Session = Depends(get_db),
+):
+    tipo = tipo.strip() if tipo and tipo.strip() else None
     query = text("""
-        SELECT id_conteudo, titulo, slug, resumo, tipo, imagem_url, publicado_em
-        FROM conteudo_educativo
-        WHERE publicado = TRUE
-        ORDER BY publicado_em DESC NULLS LAST, titulo
+        SELECT c.id_conteudo, c.titulo, c.slug, COALESCE(c.resumo, left(c.corpo, 220)) AS resumo,
+               c.tipo, c.imagem_url, c.publicado_em
+        FROM conteudo_educativo c
+        WHERE c.publicado = TRUE
+          AND (CAST(:tipo AS TEXT) IS NULL OR lower(c.tipo) = lower(CAST(:tipo AS TEXT)))
+        ORDER BY c.publicado_em DESC NULLS LAST, c.titulo
     """)
     try:
-        return [dict(r) for r in db.execute(query).mappings()]
+        return [dict(r) for r in db.execute(query, {"tipo": tipo}).mappings()]
     except SQLAlchemyError as erro:
         erro_banco(erro)
 

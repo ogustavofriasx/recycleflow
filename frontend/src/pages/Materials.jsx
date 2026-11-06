@@ -9,6 +9,14 @@ import styles from './Materials.module.css';
 // Ícone por categoria (campo `icone` de categoria_material); sem ícone mostra a inicial
 const CATEGORY_ICONS = {
   battery: '/assets/icon-battery-white.svg',
+  pill: '/assets/icon-medicine-white.svg',
+};
+
+const MATERIAL_ICONS = {
+  medicamentos: '/assets/icon-medicine-white.svg',
+  'papel e papelão': '/assets/icon-cardboard-white.svg',
+  vidro: '/assets/icon-glass-white.svg',
+  'óleo de cozinha': '/assets/icon-drop-white.svg',
 };
 
 // Espera o usuário parar de digitar antes de chamar a API
@@ -98,7 +106,10 @@ export default function Materials() {
   const chipOptions = allMaterials.map((m) => ({ value: m.id_material, label: m.nome }));
   const notFound = results !== null && results.length === 0;
   const acceptingPoints = material?.pontos?.map(toPointItem) ?? [];
-  const icon = material && CATEGORY_ICONS[material.categoria_icone];
+  const icon = material && (
+    MATERIAL_ICONS[material.nome.toLocaleLowerCase('pt-BR')] ??
+    CATEGORY_ICONS[material.categoria_icone]
+  );
 
   // Clicou num chip: seleciona e limpa a busca pra não brigar com ela
   const handleChip = (id) => {
@@ -109,23 +120,39 @@ export default function Materials() {
   return (
     <>
       <section className={styles.hero}>
-        <img src="/assets/search-bg.png" alt="" className={styles.heroBg} />
-        <h1 className={styles.title}>Buscar material</h1>
-        <p className={styles.subtitle}>Digite o material que deseja descartar e veja as orientações corretas</p>
-        <SearchInput
-          value={query}
-          onChange={setQuery}
-          placeholder="Ex: pilha, óleo de cozinha, eletrônico..."
-          className={styles.search}
-          aria-label="Buscar material"
-        />
-        <ChipGroup
-          options={chipOptions}
-          value={notFound ? null : selectedId}
-          onChange={handleChip}
-          label="Materiais comuns"
-          className={styles.chips}
-        />
+        <img src="/assets/fundo_materiais.png" alt="" className={styles.heroBg} />
+        <div className={styles.heroInner}>
+          <div className={styles.heroTop}>
+            <div className={styles.heroText}>
+              <span className={styles.eyebrow}>
+                <img src="/assets/leaf.svg" alt="" />
+                DESCARTE DO JEITO CERTO
+              </span>
+              <h1 className={styles.title}>Como descartar cada material?</h1>
+              <p className={styles.subtitle}>
+                Encontre orientações de preparo e descubra onde levar seus recicláveis em Rio Claro.
+              </p>
+              <SearchInput
+                value={query}
+                onChange={setQuery}
+                placeholder="Ex: pilha, óleo de cozinha, eletrônico..."
+                className={styles.search}
+                aria-label="Buscar material"
+              />
+            </div>
+          </div>
+          <div className={styles.filterBox}>
+            <h2 className={styles.filterTitle}>Filtrar por categoria</h2>
+            <ChipGroup
+              options={chipOptions}
+              value={notFound ? null : selectedId}
+              onChange={handleChip}
+              label="Materiais comuns"
+              className={styles.chips}
+              variant="material"
+            />
+          </div>
+        </div>
       </section>
 
       <section className={styles.results} aria-live="polite">

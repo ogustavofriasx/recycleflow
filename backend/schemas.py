@@ -6,7 +6,7 @@ devolva só os campos listados aqui.
 from datetime import date, datetime
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class Erro(BaseModel):
@@ -124,3 +124,99 @@ class Conteudo(ConteudoResumo):
     corpo: str = Field(description="Texto completo (Markdown)")
     fonte_url: Optional[str] = None
     materiais: list[MaterialAceito] = Field(default_factory=list, description="Materiais relacionados")
+
+
+# ---------------------------------------------------------- Área administrativa
+class AdminLogin(BaseModel):
+    email: str = Field(min_length=3, max_length=255)
+    senha: str = Field(min_length=1, max_length=200)
+
+
+class AdminToken(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    expires_in: int
+    usuario: dict
+
+
+class AdminInstituicaoInput(BaseModel):
+    nome: str = Field(min_length=1, max_length=200)
+    tipo: Optional[str] = Field(None, max_length=60)
+    cnpj: Optional[str] = Field(None, min_length=14, max_length=14)
+    descricao: Optional[str] = None
+    telefone: Optional[str] = Field(None, max_length=30)
+    email: Optional[str] = Field(None, max_length=255)
+    site_url: Optional[str] = None
+    ativo: bool = True
+
+
+class AdminMaterialInput(BaseModel):
+    id_categoria: int = Field(gt=0)
+    nome: str = Field(min_length=1, max_length=150)
+    descricao: Optional[str] = None
+    reciclavel: Optional[bool] = None
+    tipo_descarte: str = Field(min_length=1, max_length=40)
+    instrucoes_preparo: Optional[str] = None
+    cuidados: Optional[str] = None
+    fonte_url: Optional[str] = None
+    verificado_em: Optional[datetime] = None
+    palavras_chave: list[str] = Field(default_factory=list)
+    ativo: bool = True
+
+
+class AdminPontoInput(BaseModel):
+    id_tipo: int = Field(gt=0)
+    id_instituicao: Optional[int] = Field(None, gt=0)
+    nome: str = Field(min_length=1, max_length=200)
+    descricao: Optional[str] = None
+    logradouro: Optional[str] = Field(None, max_length=200)
+    numero: Optional[str] = Field(None, max_length=20)
+    complemento: Optional[str] = Field(None, max_length=120)
+    bairro: Optional[str] = Field(None, max_length=100)
+    cidade: str = Field(min_length=1, max_length=100)
+    estado: Optional[str] = Field(None, min_length=2, max_length=2)
+    cep: Optional[str] = Field(None, min_length=8, max_length=8)
+    latitude: Optional[float] = Field(None, ge=-90, le=90)
+    longitude: Optional[float] = Field(None, ge=-180, le=180)
+    telefone: Optional[str] = Field(None, max_length=30)
+    email_contato: Optional[str] = Field(None, max_length=255)
+    site_url: Optional[str] = None
+    horario_descricao: Optional[str] = None
+    observacoes: Optional[str] = None
+    fonte_url: Optional[str] = None
+    verificado_em: Optional[datetime] = None
+    ativo: bool = True
+    horarios: list[Horario] = Field(default_factory=list)
+    materiais: list[int] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def validar_coordenadas(self):
+        if (self.latitude is None) != (self.longitude is None):
+            raise ValueError("latitude e longitude devem ser informadas juntas")
+        return self
+
+
+class AdminProjetoInput(BaseModel):
+    titulo: str = Field(min_length=1, max_length=200)
+    descricao: str = Field(min_length=1)
+    tipo: Optional[str] = Field(None, max_length=50)
+    data_inicio: Optional[date] = None
+    data_fim: Optional[date] = None
+    fonte_url: Optional[str] = None
+    verificado_em: Optional[datetime] = None
+    id_instituicao: Optional[int] = Field(None, gt=0)
+    publicado: bool = False
+
+
+class AdminConteudoInput(BaseModel):
+    titulo: str = Field(min_length=1, max_length=200)
+    slug: str = Field(min_length=1, max_length=220, pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+    resumo: Optional[str] = None
+    corpo: str = Field(min_length=1)
+    tipo: Optional[str] = Field(None, max_length=40)
+    imagem_url: Optional[str] = None
+    fonte_url: Optional[str] = None
+    publicado: bool = False
+    publicado_em: Optional[datetime] = None
+    verificado_em: Optional[datetime] = None
+    materiais: list[int] = Field(default_factory=list)
