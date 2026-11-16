@@ -6,6 +6,10 @@ import Home from './pages/Home.jsx';
 import Materials from './pages/Materials.jsx';
 import MapPage from './pages/MapPage.jsx';
 import Projects from './pages/Projects.jsx';
+import GamePage from './pages/Game.jsx';
+
+
+
 
 // Toda vez que muda de página, volta pro topo (senão abre no meio da tela)
 function ScrollToTop() {
@@ -30,6 +34,7 @@ export default function App() {
           <Route path="/projetos" element={<Projects />} />
           {/* Qualquer rota desconhecida volta pra Home */}
           <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/jogo" element={<GamePage />} />
         </Routes>
       </main>
       <Footer />

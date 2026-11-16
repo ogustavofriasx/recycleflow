@@ -1,0 +1,81 @@
+export const DESTINOS = [
+  { id: 'papel', nome: '(Azul)', img: '/assets/game/descarte/lixeira_azul.png' },
+  { id: 'plastico', nome: '(Vermelho)', img: '/assets/game/descarte/lixeira_vermelha.png' },
+  { id: 'vidro', nome: '(Verde)', img: '/assets/game/descarte/lixeira_verde.png' },
+  { id: 'metal', nome: '(Amarelo)', img: '/assets/game/descarte/lixeira_amarela.png' },
+  { id: 'organico', nome: '(Marrom)', img: '/assets/game/descarte/lixeira_marrom.png' },
+  { id: 'ecoponto', nome: 'Ecoponto', img: '/assets/game/descarte/ecoponto.png' },
+];
+
+export const MATERIAIS = [
+  {
+    id: 1,
+    nome: 'Garrafa PET',
+    img: '/assets/game/materiais/garrafa_plastica.png',
+    destinoCorreto: 'plastico',
+    dica: 'Plásticos limpos e secos vão para a lixeira vermelha.',
+  },
+  {
+    id: 2,
+    nome: 'Cigarro',
+    img: '/assets/game/materiais/cigarro.png',
+    destinoCorreto: 'ecoponto',
+    dica: 'Bitucas de cigarro devem ser levadas a um Ecoponto!',
+  },
+  {
+    id: 3,
+    nome: 'Caixa de Papelão',
+    img: '/assets/game/materiais/papelao.png',
+    destinoCorreto: 'papel',
+    dica: 'Desmonte a caixa para ocupar menos espaço na coleta seletiva.',
+  },
+  {
+    id: 4,
+    nome: 'Fralda',
+    img: '/assets/game/materiais/fralda.png',
+    destinoCorreto: 'ecoponto',
+    dica: 'Fraldas usadas exigem descarte especial em Ecopontos.',
+  },
+  {
+    id: 5,
+    nome: 'Casca de Banana',
+    img: '/assets/game/materiais/casca_banana.png',
+    destinoCorreto: 'organico',
+    dica: 'Resíduos orgânicos podem virar adubo através da compostagem.',
+  },
+  {
+    id: 6,
+    nome: 'Lata de Alumínio',
+    img: '/assets/game/materiais/latinha.png',
+    destinoCorreto: 'metal',
+    dica: 'O alumínio é 100% reciclável e economiza muita energia.',
+  },
+  {
+    id: 7,
+    nome: 'Talher de metal',
+    img: '/assets/game/materiais/colher.png',
+    destinoCorreto: 'metal',
+    dica: 'Talheres de metal, aço ou alumínio são 100% recicláveis.',
+  },
+  {
+    id: 8,
+    nome: 'Resto de fruta',
+    img: '/assets/game/materiais/resto_de_pera.png',
+    destinoCorreto: 'organico',
+    dica: 'Resíduos orgânicos podem virar adubo através da compostagem.',
+  },
+  {
+    id: 9,
+    nome: 'Sacola de plástico',
+    img: '/assets/game/materiais/saco_plastico.png',
+    destinoCorreto: 'plastico',
+    dica: 'Plásticos limpos e secos vão para a lixeira vermelha.',
+  },
+  {
+    id: 10,
+    nome: 'Jornal',
+    img: '/assets/game/materiais/jornal.png',
+    destinoCorreto: 'papel',
+    dica: 'Jornais e papéis devem ir para a lixeira azul.',
+  },
+];

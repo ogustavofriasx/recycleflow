@@ -1,0 +1,134 @@
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.placar {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2e7d32;
+}
+
+.areaItem {
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f4f8f4;
+  border: 2px dashed #a5d6a7;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.itemArrastavel {
+  cursor: grab;
+  transition: transform 0.2s ease;
+  user-select: none;
+}
+
+.itemArrastavel:active {
+  cursor: grabbing;
+  transform: scale(1.08);
+}
+
+.itemArrastavel img {
+  width: 110px;
+  height: 110px;
+  object-fit: contain;
+}
+
+.itemNome {
+  margin-top: 0.5rem;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.instrucao {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: 0.25rem;
+}
+
+.gridDestinos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 1rem;
+}
+
+.destinoCard {
+  background: #ffffff;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 1rem 0.5rem;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.destinoCard:hover {
+  border-color: #2e7d32;
+  transform: translateY(-4px);
+}
+
+.destinoCard img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 0.5rem;
+}
+
+.destinoCard span {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.feedback {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+.acerto {
+  background-color: #e8f5e9;
+  color: #1b5e20;
+}
+
+.erro {
+  background-color: #ffebee;
+  color: #b71c1c;
+}
+
+.acoesExtras {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.btn {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  background-color: #2e7d32;
+  color: white;
+}
+
+.btnSecundario {
+  background-color: #1565c0;
+}
