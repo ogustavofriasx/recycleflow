@@ -78,7 +78,7 @@
 
 /* Pontos de coleta */
 .points { display: flex; flex-direction: column; gap: 32px; padding: 32px var(--page-x) 24px; }
-.pointsHeader { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.pointsHeader { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
 .seeAll { font-size: 14px; font-weight: 700; color: var(--blue-primary); white-space: nowrap; }
 .seeAll:hover { text-decoration: underline; }
 .pointsBody { display: flex; gap: 40px; align-items: flex-start; }
@@ -141,7 +141,9 @@
 @keyframes tip-enter { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
 @media (max-width: 1200px) {
-  .pointsBody { flex-direction: column; }
+  /* Empilhado: lista e mapa ocupam a largura toda (com flex-start a lista
+     crescia até o tamanho do texto e estourava a tela no celular) */
+  .pointsBody { flex-direction: column; align-items: stretch; }
   .mapPreview { width: 100%; }
 }
 @media (max-width: 900px) {
@@ -149,8 +151,10 @@
   .heroInner { grid-template-columns: minmax(0, 1fr) minmax(280px, .8fr); gap: 20px; }
   .heroTitle { font-size: clamp(34px, 5vw, 46px); }
   .heroVisual { min-height: 330px; }
-  .quickGrid { grid-template-columns: 1fr; }
-  .mapPreview { height: 240px; }
+  /* Tablet: cards lado a lado enquanto couberem (mín. 210px cada) */
+  .quickGrid { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; }
+  .qCard { padding: 26px 22px; }
+  .mapPreview { height: 280px; }
 }
 @media (max-width: 600px) {
   .hero { margin: 8px 12px 0; padding: 38px 22px 24px; border-radius: 22px; }
@@ -163,6 +167,14 @@
   .heroVisual { min-height: 300px; margin-top: 6px; }
   .heroArtworkCircle { width: 190px; }
   .heroArtworkBadge { max-width: 100%; padding: 10px 12px; font-size: 10px; }
+  .quick { padding-top: 40px; gap: 22px; }
+  .quickGrid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  /* Celular: ícone ao lado do texto, cards mais baixos */
+  .qCard { display: grid; grid-template-columns: 44px minmax(0, 1fr); column-gap: 14px; row-gap: 4px; padding: 18px; }
+  .qIcon { grid-row: span 2; width: 44px; height: 44px; border-radius: 12px; }
+  .qText { max-width: none; }
+  .points, .tips { gap: 20px; }
+  .mapPreview { height: 240px; }
   .tipsCarousel { grid-template-columns: 36px minmax(0, 1fr) 36px; gap: 14px 10px; }
   .tip { min-height: 240px; padding: 56px 24px 28px; border-radius: 18px; }
   .tipContent { flex-direction: column; align-items: flex-start; gap: 20px; }

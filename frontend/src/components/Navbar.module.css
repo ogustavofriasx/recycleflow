@@ -22,10 +22,51 @@
 .link:hover { color: var(--text-dark); }
 .active, .active:hover { color: var(--blue-primary); font-weight: 800; }
 
-@media (max-width: 700px) {
-  .navbar { height: auto; flex-wrap: wrap; gap: 8px; padding-top: 12px; padding-bottom: 12px; }
-  .links { gap: 10px 16px; flex-wrap: wrap; justify-content: flex-end; }
-  .link { font-size: 13px; }
+/* Botão ☰ — só aparece no celular */
+.menuButton {
+  display: none;
+  width: 44px; height: 44px;
+  align-items: center; justify-content: center;
+  border-radius: 12px;
+  transition: background .15s;
+}
+.menuButton:hover { background: var(--bg-light); }
+.menuButton:focus-visible { outline: 3px solid rgba(8, 124, 204, .35); outline-offset: 2px; }
+.burger, .burger::before, .burger::after {
+  display: block; width: 22px; height: 2px; border-radius: 2px;
+  background: var(--text-dark);
+  transition: transform .2s, background .2s;
+}
+.burger { position: relative; }
+.burger::before, .burger::after { position: absolute; left: 0; content: ""; }
+.burger::before { top: -7px; }
+.burger::after { top: 7px; }
+/* Aberto: as três linhas viram um X */
+.burgerOpen { background: transparent; }
+.burgerOpen::before { transform: translateY(7px) rotate(45deg); }
+.burgerOpen::after { transform: translateY(-7px) rotate(-45deg); }
+
+@media (max-width: 760px) {
+  .navbar { height: 64px; }
+  .logoBox { width: 42px; height: 42px; }
+  .logo { width: 72px; height: 68px; }
+  .menuButton { display: flex; margin-right: -8px; }
+  /* Menu vira uma lista que desce embaixo da barra */
+  .links {
+    position: absolute; top: 100%; left: 0; right: 0;
+    display: none;
+    flex-direction: column; align-items: stretch; gap: 0;
+    padding: 8px var(--page-x) 16px;
+    background: var(--base-white);
+    border-bottom: 1px solid var(--border-strong);
+    box-shadow: 0 12px 24px rgba(15, 42, 61, .08);
+  }
+  .linksOpen { display: flex; }
+  .link { padding: 13px 4px; font-size: 16px; border-bottom: 1px solid var(--border-default); }
+  .link:last-child { border-bottom: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .burger, .burger::before, .burger::after { transition: none; }
 }
 @font-face {
   font-family: 'Poppins Menu';

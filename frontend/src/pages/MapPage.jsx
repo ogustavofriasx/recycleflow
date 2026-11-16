@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import ChipGroup from '../components/ChipGroup.jsx';
 import LocationBar from '../components/LocationBar.jsx';
@@ -30,6 +30,7 @@ export default function MapPage() {
   const [selectedId, setSelectedId] = useState(null);
   const location = useUserLocation();
   const [picking, setPicking] = useState(false); // modo "escolher no mapa"
+  const mapRef = useRef(null);
 
   // Opções dos filtros (uma vez)
   useEffect(() => {
@@ -99,6 +100,16 @@ export default function MapPage() {
   };
 
   const selected = filtered.find((p) => p.id === selectedId) ?? null;
+
+  // No celular a lista fica em cima do mapa: ao escolher um ponto, rola até o mapa pra mostrar o card
+  const selectFromList = (id) => {
+    const next = id === selectedId ? null : id;
+    setSelectedId(next);
+    if (next != null && window.matchMedia('(max-width: 800px)').matches) {
+      const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      mapRef.current?.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+    }
+  };
   const semCoordenada = filtered.filter((p) => !p.position).length;
   const notice =
     !loading && !error && semCoordenada
@@ -176,14 +187,14 @@ export default function MapPage() {
                   divider={i > 0}
                   selected={p.id === selectedId}
                   // Clicar de novo no mesmo ponto fecha o card
-                  onClick={() => setSelectedId(p.id === selectedId ? null : p.id)}
+                  onClick={() => selectFromList(p.id)}
                 />
               ))
             )}
           </div>
         </aside>
 
-        <div className={styles.mapArea}>
+        <div className={styles.mapArea} ref={mapRef}>
           <MapView
             points={filtered}
             selectedId={selectedId}

@@ -34,7 +34,8 @@
 .overlay > * { pointer-events: auto; max-height: 100%; overflow: auto; }
 
 @media (max-width: 600px) {
-  .overlay { top: auto; left: 16px; justify-content: center; align-items: flex-end; }
+  /* Celular: o card fica na parte de baixo e deixa ~40% do mapa visível (rola por dentro) */
+  .overlay { top: 40%; left: 12px; right: 12px; bottom: 12px; max-width: none; justify-content: center; align-items: flex-end; }
   .notice { max-width: calc(100% - 24px); top: 64px; }
 }
 
