@@ -87,7 +87,7 @@ export default function Home() {
               <img src="/assets/leaf.svg" alt="" />
               RECICLE COM PROPÓSITO
             </span>
-            <h1 className={styles.heroTitle}>Recicle de forma inteligente em Rio Claro</h1>
+            <h1 className={styles.heroTitle}>Recicle de forma inteligente em Rio&nbsp;Claro</h1>
             <p className={styles.heroSubtitle}>
               Descubra onde e como descartar corretamente seus resíduos, encontre pontos de coleta próximos e aprenda a reciclar melhor.
             </p>

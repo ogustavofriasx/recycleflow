@@ -186,3 +186,27 @@
   .tipContent { animation: none; }
   .tipArrow, .tipDot { transition: none; }
 }
+
+/* Telas largas (≥ 1600px): o hero cresce junto com a tela em vez de ficar
+   preso num bloco de 1440px no centro. Abaixo de 1600px nada muda. */
+@media (min-width: 1600px) {
+  .hero { min-height: clamp(540px, 30vw, 760px); padding: clamp(56px, 4vw, 96px) clamp(72px, 6vw, 160px); }
+  .heroInner {
+    width: 100%;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
+    gap: clamp(48px, 6vw, 180px);
+  }
+  .heroText { gap: clamp(20px, 1.4vw, 32px); }
+  .heroEyebrow { font-size: clamp(12px, .65vw, 16px); }
+  .heroEyebrow img { width: 22px; height: 22px; }
+  .heroTitle { max-width: 12em; font-size: clamp(58px, 3.7vw, 96px); } /* "inteligente em Rio Claro" cabe numa linha */
+  .heroSubtitle { max-width: 46ch; font-size: clamp(17px, 1vw, 24px); }
+  .actions { gap: 18px; }
+  .actions > a { height: clamp(50px, 3vw, 64px); padding: 0 clamp(26px, 1.8vw, 40px); font-size: clamp(14px, .85vw, 18px); border-radius: 14px; }
+  .heroVisual { min-height: clamp(380px, 24vw, 560px); }
+  .heroArtwork { gap: clamp(16px, 1.2vw, 28px); }
+  .heroArtworkCircle { width: clamp(300px, 19vw, 460px); }
+  .heroRecycleSymbol { font-size: clamp(230px, 14vw, 340px); }
+  .heroArtworkBadge { padding: 14px 22px; font-size: clamp(12px, .7vw, 16px); }
+  .heroArtworkBadge img { width: 26px; height: 26px; }
+}
