@@ -12,6 +12,7 @@ engine = create_engine(DATABASE_URL)
 
 SessionLocal = sessionmaker(bind=engine, autoflush=False)
 
+
 def get_db():
     db = SessionLocal()
     try:
@@ -19,10 +20,12 @@ def get_db():
     finally:
         db.close()
 
+
 def materiais():
+    """Imprime os materiais cadastrados. Uso: dentro de backend/, `python -m db.database`."""
     query = text("SELECT * FROM material ORDER BY id_material")
 
-    try: 
+    try:
         with engine.connect() as connection:
             result = connection.execute(query)
             materiais = result.mappings().all()
@@ -38,5 +41,7 @@ def materiais():
         print(f"Erro ao consultar o banco: {erro}")
 
 
-materiais()
-engine.dispose()
+# Só roda quando o arquivo é executado direto, não quando a API importa o módulo
+if __name__ == "__main__":
+    materiais()
+    engine.dispose()

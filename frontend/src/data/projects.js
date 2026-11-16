@@ -5,12 +5,12 @@ export const projectFilters = [
   { value: 'ong', label: 'ONGs' },
 ];
 
-export const stats = [
-  { value: '8', label: 'Ecopontos ativos' },
-  { value: '5,1%', label: 'Taxa de recuperação' },
-  { value: '3', label: 'Cooperativas parceiras' },
-  { value: '210k', label: 'Habitantes atendidos' },
-];
+// Indicadores FIXOS (ainda sem tabela no banco). Conferir a fonte antes de publicar.
+// "Ecopontos ativos" e "Cooperativas parceiras" são contados da API em Projects.jsx.
+export const fixedStats = {
+  recuperacao: { value: '5,1%', label: 'Taxa de recuperação' },
+  habitantes: { value: '210k', label: 'Habitantes atendidos' },
+};
 
 // Campanhas ficam com categoria própria, então só aparecem no filtro "Todos"
 export const projects = [

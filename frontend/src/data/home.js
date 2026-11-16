@@ -15,9 +15,3 @@ export const quickAccess = [
     text: 'Dicas, curiosidades e projetos de reciclagem em Rio Claro e região.',
   },
 ];
-
-export const tips = [
-  { icon: '/assets/tip-drop.svg', w: 47, h: 41, text: '1 litro de óleo de cozinha pode contaminar até 1 milhão de litros de água.' },
-  { icon: '/assets/tip-battery.svg', w: 39, h: 43, text: 'Pilhas e baterias nunca devem ser descartadas no lixo comum. Busque sempre lugares apropriados.' },
-  { icon: '/assets/tip-recycle.svg', w: 39, h: 41, text: 'Rio Claro recupera 5,1% dos recicláveis coletados — acima da média estadual.' },
-];

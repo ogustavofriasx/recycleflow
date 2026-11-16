@@ -9,3 +9,29 @@ O RecycleFlow é uma plataforma em desenvolvimento para centralizar informaçõe
 
 Status:
 Projeto acadêmico em desenvolvimento, com banco de dados estruturado e rotas iniciais de consulta implementadas.
+
+## Área administrativa
+
+O painel fica em `/admin`. As operações de criação, edição e remoção são protegidas no backend:
+instituições, pontos de coleta e materiais são desativados logicamente; projetos e conteúdos
+educativos podem ser excluídos. Projetos e artigos/dicas só aparecem nas rotas públicas quando
+marcados como publicados.
+
+Configure `ADMIN_TOKEN_SECRET` no ambiente do backend com pelo menos 32 caracteres aleatórios.
+Por exemplo, gere um valor com `python -c "import secrets; print(secrets.token_urlsafe(48))"`.
+Não reutilize nem publique esse segredo.
+
+Não há cadastro público de administradores. Para criar a primeira conta, configure a variável
+`URL` do banco Neon como já é feito para a API e execute no diretório `backend`:
+
+```powershell
+python -m scripts.create_admin
+```
+
+O comando solicita nome, e-mail e senha de forma interativa e grava apenas o hash Argon2id da senha.
+Cada requisição administrativa verifica novamente se a conta continua ativa e com papel `admin`,
+de modo que o acesso possa ser revogado alterando `usuario.papel` ou `usuario.ativo` no banco.
+
+Os endpoints de administração ficam sob `/admin`. Os registros públicos existentes usam as tabelas
+do schema atual; aplique `backend/db/schema.sql` e as migrações já existentes antes de ativar o
+painel em um banco ainda não preparado.

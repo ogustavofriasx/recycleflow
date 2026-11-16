@@ -1,16 +1,65 @@
 /* Hero */
 .hero {
   position: relative;
-  height: 482px;
-  display: flex; align-items: center;
-  padding: 80px var(--page-x);
+  min-height: 540px;
+  display: flex;
+  align-items: center;
+  margin: 12px var(--page-x) 0;
+  padding: clamp(42px, 5vw, 72px);
   overflow: hidden;
+  border-radius: 30px;
+  isolation: isolate;
 }
-.heroBg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
-.heroText { position: relative; display: flex; flex-direction: column; gap: 20px; }
-.heroTitle { font-size: 40px; font-weight: 700; color: var(--text-dark); max-width: 560px; }
-.heroSubtitle { font-size: 16px; color: var(--text-gray); max-width: 480px; }
+.hero::after {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(255, 255, 255, .22), rgba(255, 255, 255, .06) 58%, rgba(232, 255, 226, .12));
+  content: "";
+}
+.heroBg { position: absolute; z-index: -2; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; pointer-events: none; }
+.heroInner {
+  width: min(100%, 1440px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(340px, .92fr);
+  align-items: center;
+  gap: clamp(24px, 5vw, 76px);
+  margin: 0 auto;
+}
+.heroText { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 20px; }
+.heroEyebrow { display: inline-flex; align-items: center; gap: 8px; color: #347d16; font-size: 12px; font-weight: 800; letter-spacing: .1em; }
+.heroEyebrow img { width: 18px; height: 18px; object-fit: contain; }
+.heroTitle { max-width: 650px; color: var(--text-dark); font-size: clamp(38px, 4vw, 58px); font-weight: 800; line-height: 1.08; letter-spacing: -.035em; }
+.heroSubtitle { max-width: 540px; color: #526170; font-size: 17px; line-height: 1.65; }
 .actions { display: flex; gap: 14px; flex-wrap: wrap; }
+.heroVisual { position: relative; min-height: 380px; display: flex; align-items: center; justify-content: center; }
+.heroArtwork { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
+.heroArtworkCircle {
+  width: clamp(210px, 22vw, 300px);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, .76);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .42);
+  box-shadow: 0 24px 80px rgba(27, 105, 78, .12), inset 0 0 40px rgba(255, 255, 255, .55);
+  backdrop-filter: blur(3px);
+}
+.heroRecycleSymbol { color: #53BC22; font-family: Arial, sans-serif; font-size: clamp(150px, 18vw, 230px); line-height: 1; }
+.heroArtworkBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 16px;
+  border: 1px solid rgba(220, 230, 240, .8);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .86);
+  box-shadow: 0 8px 26px rgba(15, 42, 61, .1);
+  color: var(--text-dark);
+  font-size: 12px;
+  font-weight: 700;
+}
+.heroArtworkBadge img { width: 22px; height: 22px; }
 
 /* Como podemos ajudar */
 .quick { display: flex; flex-direction: column; gap: 32px; padding: 56px var(--page-x) 24px; }
@@ -29,44 +78,135 @@
 
 /* Pontos de coleta */
 .points { display: flex; flex-direction: column; gap: 32px; padding: 32px var(--page-x) 24px; }
-.pointsHeader { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.pointsHeader { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
 .seeAll { font-size: 14px; font-weight: 700; color: var(--blue-primary); white-space: nowrap; }
 .seeAll:hover { text-decoration: underline; }
 .pointsBody { display: flex; gap: 40px; align-items: flex-start; }
 .pointsList { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .mapPreview {
   flex-shrink: 0; width: 640px; height: 340px;
-  border: 1px solid var(--border-default); border-radius: 20px; overflow: hidden;
+  border-radius: 20px; overflow: hidden;
+  --map-min-height: 0; /* deixa o MapView ocupar só a altura do card */
 }
-.mapPreview img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s; }
-.mapPreview:hover img { transform: scale(1.02); }
+.pointsEmpty { font-size: 14px; color: var(--text-gray); padding: 16px 0; }
 
 /* Dicas */
 .tips { display: flex; flex-direction: column; gap: 32px; padding: 32px var(--page-x) 64px; }
-.tipsGrid { display: flex; gap: 24px; flex-wrap: wrap; }
-.tip {
-  width: 420px; min-height: 120px;
-  display: flex; align-items: flex-start; gap: 12px;
-  padding: 30px 22px;
-  background: var(--base-white);
-  border: 1px solid var(--border-strong);
-  border-radius: 16px;
+.tipsCarousel {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 720px) 48px;
+  grid-template-rows: minmax(210px, auto) auto;
+  justify-content: center;
+  align-items: center;
+  gap: 18px 24px;
 }
+.tip {
+  position: relative;
+  min-height: 210px;
+  display: flex;
+  align-items: center;
+  padding: 52px 56px 36px;
+  background: #53BC22;
+  border: 1px solid var(--border-strong);
+  border-radius: 24px;
+  box-shadow: 0 12px 32px rgba(31, 41, 55, .08);
+}
+.tipSolo { grid-column: 1 / -1; width: min(100%, 720px); justify-self: center; }
+.tipContent { display: flex; align-items: center; gap: 32px; animation: tip-enter .25s ease both; }
 .tipIcon {
-  flex-shrink: 0; width: 75px; height: 69px; border-radius: 10px;
-  background: var(--bg-green-light);
+  flex-shrink: 0; width: 112px; height: 112px; border-radius: 24px;
+  background: var(--base-white);
   display: flex; align-items: center; justify-content: center;
 }
-.tipText { font-size: 16px; color: var(--text-gray); max-width: 260px; }
+.tipText { font-size: 22px; line-height: 1.5; font-weight: 600; color: var(--base-white); max-width: 480px; }
+.tipLink { color: inherit; }
+.tipLink:hover { text-decoration: underline; }
+.tipArrow {
+  width: 48px; height: 48px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border-strong);
+  border-radius: 50%;
+  background: var(--base-white);
+  color: var(--text-dark);
+  font-size: 30px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background .15s, color .15s, transform .15s;
+}
+.tipArrow:hover { background: var(--green-accent); color: var(--base-white); transform: scale(1.05); }
+.tipPagination { grid-column: 2; display: flex; justify-content: center; align-items: center; gap: 10px; }
+.tipDot { width: 10px; height: 10px; padding: 0; border: 0; border-radius: 50%; background: var(--border-strong); cursor: pointer; transition: width .2s, background .2s; }
+.tipDotActive { width: 28px; border-radius: 8px; background: var(--green-accent); }
+.tipArrow:focus-visible, .tipDot:focus-visible { outline: 3px solid var(--blue-primary); outline-offset: 3px; }
+@keyframes tip-enter { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
 @media (max-width: 1200px) {
-  .pointsBody { flex-direction: column; }
+  /* Empilhado: lista e mapa ocupam a largura toda (com flex-start a lista
+     crescia até o tamanho do texto e estourava a tela no celular) */
+  .pointsBody { flex-direction: column; align-items: stretch; }
   .mapPreview { width: 100%; }
-  .tip { width: 100%; }
 }
 @media (max-width: 900px) {
-  .hero { height: auto; padding: 56px var(--page-x); }
-  .heroTitle { font-size: 30px; }
-  .quickGrid { grid-template-columns: 1fr; }
+  .hero { min-height: 0; padding: 48px; }
+  .heroInner { grid-template-columns: minmax(0, 1fr) minmax(280px, .8fr); gap: 20px; }
+  .heroTitle { font-size: clamp(34px, 5vw, 46px); }
+  .heroVisual { min-height: 330px; }
+  /* Tablet: cards lado a lado enquanto couberem (mín. 210px cada) */
+  .quickGrid { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; }
+  .qCard { padding: 26px 22px; }
+  .mapPreview { height: 280px; }
+}
+@media (max-width: 600px) {
+  .hero { margin: 8px 12px 0; padding: 38px 22px 24px; border-radius: 22px; }
+  .heroInner { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .heroText { gap: 16px; }
+  .heroTitle { font-size: clamp(34px, 10vw, 44px); }
+  .heroSubtitle { font-size: 15px; }
+  .actions { width: 100%; flex-direction: column; gap: 10px; }
+  .actions > a { width: 100%; }
+  .heroVisual { min-height: 300px; margin-top: 6px; }
+  .heroArtworkCircle { width: 190px; }
+  .heroArtworkBadge { max-width: 100%; padding: 10px 12px; font-size: 10px; }
+  .quick { padding-top: 40px; gap: 22px; }
+  .quickGrid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  /* Celular: ícone ao lado do texto, cards mais baixos */
+  .qCard { display: grid; grid-template-columns: 44px minmax(0, 1fr); column-gap: 14px; row-gap: 4px; padding: 18px; }
+  .qIcon { grid-row: span 2; width: 44px; height: 44px; border-radius: 12px; }
+  .qText { max-width: none; }
+  .points, .tips { gap: 20px; }
   .mapPreview { height: 240px; }
+  .tipsCarousel { grid-template-columns: 36px minmax(0, 1fr) 36px; gap: 14px 10px; }
+  .tip { min-height: 240px; padding: 56px 24px 28px; border-radius: 18px; }
+  .tipContent { flex-direction: column; align-items: flex-start; gap: 20px; }
+  .tipIcon { width: 76px; height: 76px; border-radius: 18px; }
+  .tipText { font-size: 18px; }
+  .tipArrow { width: 36px; height: 36px; font-size: 24px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tipContent { animation: none; }
+  .tipArrow, .tipDot { transition: none; }
+}
+
+/* Telas largas (≥ 1600px): o hero cresce junto com a tela em vez de ficar
+   preso num bloco de 1440px no centro. Abaixo de 1600px nada muda. */
+@media (min-width: 1600px) {
+  .hero { min-height: clamp(540px, 30vw, 760px); padding: clamp(56px, 4vw, 96px) clamp(72px, 6vw, 160px); }
+  .heroInner {
+    width: 100%;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
+    gap: clamp(48px, 6vw, 180px);
+  }
+  .heroText { gap: clamp(20px, 1.4vw, 32px); }
+  .heroEyebrow { font-size: clamp(12px, .65vw, 16px); }
+  .heroEyebrow img { width: 22px; height: 22px; }
+  .heroTitle { max-width: 12em; font-size: clamp(58px, 3.7vw, 96px); } /* "inteligente em Rio Claro" cabe numa linha */
+  .heroSubtitle { max-width: 46ch; font-size: clamp(17px, 1vw, 24px); }
+  .actions { gap: 18px; }
+  .actions > a { height: clamp(50px, 3vw, 64px); padding: 0 clamp(26px, 1.8vw, 40px); font-size: clamp(14px, .85vw, 18px); border-radius: 14px; }
+  .heroVisual { min-height: clamp(380px, 24vw, 560px); }
+  .heroArtwork { gap: clamp(16px, 1.2vw, 28px); }
+  .heroArtworkCircle { width: clamp(300px, 19vw, 460px); }
+  .heroRecycleSymbol { font-size: clamp(230px, 14vw, 340px); }
+  .heroArtworkBadge { padding: 14px 22px; font-size: clamp(12px, .7vw, 16px); }
+  .heroArtworkBadge img { width: 26px; height: 26px; }
 }

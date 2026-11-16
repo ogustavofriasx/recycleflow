@@ -35,7 +35,7 @@ CREATE TABLE usuario (
     atualizado_em TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     CONSTRAINT ck_usuario_nome CHECK (length(btrim(nome)) > 0),
     CONSTRAINT ck_usuario_email CHECK (length(btrim(email)) > 0 AND email = btrim(email)),
-    CONSTRAINT ck_usuario_senha_hash CHECK (length(senha_hash) > 0),
+    CONSTRAINT ck_usuario_senha_hash CHECK (length(senha) > 0),
     CONSTRAINT ck_usuario_papel CHECK (papel IN ('usuario', 'admin'))
 );
 

@@ -39,6 +39,8 @@
 }
 .cardTitle { font-size: 16px; font-weight: 700; color: var(--text-dark); }
 .cardText { font-size: 12.5px; color: var(--text-gray); max-width: 320px; }
+.institution { font-size: 11.5px; font-weight: 700; color: var(--text-dark); }
+.empty { grid-column: 1 / -1; font-size: 14px; color: var(--text-gray); }
 .more { display: inline-flex; align-items: center; gap: 3px; font-size: 12.5px; font-weight: 700; color: var(--blue-primary); }
 .more:hover { text-decoration: underline; }
 
@@ -47,6 +49,14 @@
   .stats { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 700px) {
-  .grid, .stats { grid-template-columns: 1fr; }
-  .filters { padding: 32px var(--page-x) 12px; }
+  .header { padding-top: 32px; }
+  .title { font-size: 26px; }
+  .grid { grid-template-columns: 1fr; gap: 16px; padding-top: 24px; min-height: 0; }
+  .card { padding: 20px; }
+  .filters { padding: 24px var(--page-x) 8px; }
+  /* Indicadores em 2 colunas: 4 cards empilhados ocupavam a tela toda */
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding-top: 20px; }
+  .stat { padding: 16px 10px; }
+  .statValue { font-size: 22px; }
+  .statLabel { font-size: 10px; line-height: 1.35; }
 }
