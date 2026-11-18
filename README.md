@@ -10,6 +10,64 @@ O RecycleFlow é uma plataforma em desenvolvimento para centralizar informaçõe
 Status:
 Projeto acadêmico em desenvolvimento, com banco de dados estruturado e rotas iniciais de consulta implementadas.
 
+## Como rodar o projeto
+
+O projeto tem duas partes que rodam ao mesmo tempo, cada uma em um terminal: o backend (FastAPI,
+servido pelo uvicorn na porta 8000) e o frontend (React com Vite). Os comandos abaixo partem da
+raiz do repositório e usam o PowerShell no Windows.
+
+Pré-requisitos: Python 3 e Node.js (com npm) instalados.
+
+### 1. Variáveis de ambiente
+
+Crie um arquivo `.env` na raiz do repositório (ele não é versionado) com:
+
+```env
+URL=<string de conexão do banco Neon>
+ADMIN_TOKEN_SECRET=<segredo com pelo menos 32 caracteres>
+```
+
+O backend carrega esse arquivo automaticamente. Veja a seção [Área administrativa](#área-administrativa)
+para gerar o `ADMIN_TOKEN_SECRET`.
+
+### 2. Backend
+
+Na primeira vez, crie o ambiente virtual e instale as dependências:
+
+```powershell
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+pip install -r assets/requirements.txt
+```
+
+Nas próximas vezes, basta ativar o ambiente virtual e subir a API:
+
+```powershell
+.\venv\Scripts\Activate.ps1
+cd backend
+uvicorn main:app --reload
+```
+
+A API fica em `http://localhost:8000` e a documentação interativa em `http://localhost:8000/docs`.
+
+> Se o PowerShell bloquear a ativação do ambiente, rode uma vez
+> `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`. No Linux/macOS, ative com
+> `source venv/bin/activate`.
+
+### 3. Frontend
+
+Em outro terminal:
+
+```powershell
+cd frontend
+npm install   # só na primeira vez ou quando as dependências mudarem
+npm run dev
+```
+
+Abra o endereço mostrado pelo Vite (normalmente `http://localhost:5173`). Em desenvolvimento, as
+chamadas para `/api` são redirecionadas pelo Vite para o backend em `localhost:8000`, então o
+backend precisa estar rodando para as páginas carregarem os dados.
+
 ## Jogo de separação
 
 O jogo fica em `/jogo` e ensina, de forma lúdica, para onde vai cada tipo de resíduo. O jogador
