@@ -58,7 +58,9 @@ export default function GamePage() {
   };
 
   return (
-    <div className={styles.container}>
+    <section className={styles.stage}>
+      <img src="/assets/fundo_jogo_pagina.png" alt="" className={styles.stageBg} />
+      <div className={styles.container}>
       <div className={styles.header}>
         <h1>Desafio da Reciclagem</h1>
         <span className={styles.placar}>Pontos: {pontos}</span>
@@ -131,6 +133,7 @@ export default function GamePage() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </section>
   );
 }

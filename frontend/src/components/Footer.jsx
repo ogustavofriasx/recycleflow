@@ -9,6 +9,7 @@ const columns = [
       { label: 'Pontos de coleta', to: '/mapa' },
       { label: 'Projetos', to: '/projetos' },
       { label: 'Conteúdos educativos', to: '/conteudos' },
+      { label: 'Jogo da separação', to: '/jogo' },
     ],
   },
   {

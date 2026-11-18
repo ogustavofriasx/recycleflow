@@ -3,6 +3,7 @@
 .eyebrow { color: var(--blue-primary); font-size: 11px; font-weight: 700; letter-spacing: .1em; }
 .header h1 { color: var(--text-dark); font-size: 32px; }
 .header p { max-width: 650px; color: var(--text-gray); font-size: 14px; }
+.game { margin-top: 48px; }
 .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; }
 .card {
   min-width: 0;
@@ -11,8 +12,8 @@
   align-items: flex-start;
   gap: 12px;
   padding: 22px;
-  border: 1px solid var(--border-default);
-  border-radius: 18px;
+  border: var(--card-border);
+  border-radius: var(--card-radius);
   background: var(--base-white);
   box-shadow: 0 6px 20px rgba(15, 42, 61, .05);
 }
@@ -48,6 +49,7 @@
   .listPage, .articlePage { padding: 32px 20px 46px; }
   .header h1, .article h1 { font-size: 26px; }
   .grid { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .game { margin-top: 32px; }
   .card { padding: 18px; }
   .summary { font-size: 16px; }
 }

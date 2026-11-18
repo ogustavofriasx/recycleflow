@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import GameBanner from '../components/GameBanner.jsx';
 import { listarConteudos, obterConteudo } from '../services/api.js';
 import styles from './Contents.module.css';
 
@@ -125,6 +126,11 @@ export default function Contents() {
       ) : (
         <p className={styles.message}>Ainda não há conteúdos publicados.</p>
       )}
+      <GameBanner
+        className={styles.game}
+        eyebrow="DEPOIS DA LEITURA, A PRÁTICA"
+        title="Coloque as dicas em prática"
+      />
     </section>
   );
 }

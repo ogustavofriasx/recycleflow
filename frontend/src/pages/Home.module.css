@@ -76,6 +76,9 @@
 .qTitle { font-size: 17px; font-weight: 700; color: var(--text-dark); }
 .qText { font-size: 13px; color: var(--text-gray); max-width: 260px; }
 
+/* Chamada do jogo */
+.game { padding: 32px var(--page-x) 24px; }
+
 /* Pontos de coleta */
 .points { display: flex; flex-direction: column; gap: 32px; padding: 32px var(--page-x) 24px; }
 .pointsHeader { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
@@ -107,8 +110,8 @@
   align-items: center;
   padding: 52px 56px 36px;
   background: #53BC22;
-  border: 1px solid var(--border-strong);
-  border-radius: 24px;
+  border: var(--card-border);
+  border-radius: var(--card-radius);
   box-shadow: 0 12px 32px rgba(31, 41, 55, .08);
 }
 .tipSolo { grid-column: 1 / -1; width: min(100%, 720px); justify-self: center; }
@@ -176,7 +179,7 @@
   .points, .tips { gap: 20px; }
   .mapPreview { height: 240px; }
   .tipsCarousel { grid-template-columns: 36px minmax(0, 1fr) 36px; gap: 14px 10px; }
-  .tip { min-height: 240px; padding: 56px 24px 28px; border-radius: 18px; }
+  .tip { min-height: 240px; padding: 56px 24px 28px; }
   .tipContent { flex-direction: column; align-items: flex-start; gap: 20px; }
   .tipIcon { width: 76px; height: 76px; border-radius: 18px; }
   .tipText { font-size: 18px; }

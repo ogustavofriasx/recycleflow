@@ -1,21 +1,52 @@
+.stage {
+  position: relative;
+  margin: 12px var(--page-x) 48px;
+  padding: clamp(24px, 3vw, 40px);
+  overflow: hidden;
+  border-radius: 26px;
+  isolation: isolate;
+}
+.stageBg { position: absolute; z-index: -2; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; pointer-events: none; }
+/* Véu branco: leve no céu (topo) e mais forte embaixo, apagando as lixeiras
+   desenhadas da ilustração para não confundir com as lixeiras do jogo */
+.stage::after {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .2) 0%, rgba(255, 255, 255, .42) 40%, rgba(255, 255, 255, .78) 72%, rgba(255, 255, 255, .9) 100%);
+  content: "";
+}
+
 .container {
   max-width: 1000px;
   margin: 0 auto;
-  padding: 2rem 1rem;
   text-align: center;
 }
 
 .header {
+  position: relative;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+  min-height: 48px;
   margin-bottom: 2rem;
 }
 
+.header h1 {
+  color: var(--green-accent);
+  text-shadow: 0 1px 12px rgba(255, 255, 255, .9); /* destaca do céu da ilustração */
+}
+/* Placar fica no canto direito sem tirar o título do centro */
+.header .placar { position: absolute; right: 0; top: 50%; transform: translateY(-50%); }
+
 .placar {
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .9);
+  box-shadow: 0 6px 18px rgba(15, 42, 61, .08);
   font-size: 1.25rem;
   font-weight: 700;
-  color: #2e7d32;
+  color: var(--green-accent);
 }
 
 .areaItem {
@@ -24,8 +55,11 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: #f4f8f4;
+  background-color: rgba(255, 255, 255, .88);
   border: 2px dashed #a5d6a7;
+  box-shadow: 0 10px 28px rgba(15, 42, 61, .08);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
   border-radius: 16px;
   padding: 1.5rem;
   margin-bottom: 2.5rem;
@@ -67,9 +101,10 @@
 }
 
 .destinoCard {
-  background: #ffffff;
-  border: 2px solid #e0e0e0;
-  border-radius: 12px;
+  background: rgba(255, 255, 255, .92);
+  box-shadow: 0 6px 18px rgba(15, 42, 61, .06);
+  border: var(--card-border);
+  border-radius: var(--card-radius);
   padding: 1rem 0.5rem;
   transition: all 0.2s ease;
   display: flex;
@@ -78,7 +113,7 @@
 }
 
 .destinoCard:hover {
-  border-color: #2e7d32;
+  border-color: var(--green-accent);
   transform: translateY(-4px);
 }
 
@@ -131,4 +166,15 @@
 
 .btnSecundario {
   background-color: #1565c0;
+}
+
+/* Telas menores: título em cima e placar embaixo, os dois centralizados
+   (lado a lado o título encostaria no placar) */
+@media (max-width: 760px) {
+  .header { flex-direction: column; gap: 12px; }
+  .header .placar { position: static; transform: none; }
+}
+@media (max-width: 600px) {
+  .stage { margin: 8px 12px 32px; padding: 20px 14px; border-radius: 22px; }
+  .stage::after { background: rgba(255, 255, 255, .72); }
 }

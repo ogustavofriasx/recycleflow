@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '../components/Button.jsx';
+import GameBanner from '../components/GameBanner.jsx';
 import LocationBar from '../components/LocationBar.jsx';
 import MapView from '../components/MapView.jsx';
 import PointItem from '../components/PointItem.jsx';
@@ -147,6 +148,15 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <div className={styles.game}>
+        <GameBanner
+          variant="hero"
+          background="/assets/fundo_jogo_cidade.png"
+          eyebrow="TESTE SEUS CONHECIMENTOS"
+          text="Arraste cada material para a lixeira certa, ganhe pontos e aprenda dicas de descarte pelo caminho."
+        />
+      </div>
 
       <section className={styles.tips}>
         <div className={styles.pointsHeader}>

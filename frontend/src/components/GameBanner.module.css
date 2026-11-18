@@ -1,0 +1,85 @@
+/* Card base: fundo ilustrado + texto à esquerda + lixeiras/itens à direita */
+.banner {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr);
+  align-items: center;
+  gap: 24px;
+  overflow: hidden;
+  border: 1px solid var(--border-default);
+  border-radius: 24px;
+  isolation: isolate;
+}
+.bg { position: absolute; z-index: -1; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+
+.content { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+.eyebrow { display: inline-flex; align-items: center; gap: 8px; color: #347d16; font-size: 12px; font-weight: 800; letter-spacing: .1em; }
+.eyebrow img { width: 18px; height: 18px; object-fit: contain; }
+.title { color: var(--text-dark); font-weight: 800; line-height: 1.12; letter-spacing: -.025em; }
+.text { max-width: 460px; color: #526170; line-height: 1.6; }
+.cta { gap: 8px; margin-top: 6px; background: var(--green-accent); }
+.cta span { font-size: 20px; line-height: 1; }
+
+/* Lado direito: lixeiras alinhadas embaixo e materiais "flutuando" acima */
+.visual { position: relative; align-self: stretch; display: flex; align-items: flex-end; justify-content: center; }
+.bins { display: flex; align-items: flex-end; gap: 6px; }
+.bin { width: auto; object-fit: contain; filter: drop-shadow(0 8px 14px rgba(15, 42, 61, .14)); }
+.item { position: absolute; object-fit: contain; filter: drop-shadow(0 6px 10px rgba(15, 42, 61, .16)); animation: float 4s ease-in-out infinite; }
+.itemA { top: 6%; left: 14%; transform: rotate(-12deg); }
+.itemB { top: 2%; left: 46%; animation-delay: -1.3s; }
+.itemC { top: 10%; right: 10%; transform: rotate(10deg); animation-delay: -2.6s; }
+
+.banner:hover .item { animation-duration: 2.4s; }
+
+@keyframes float {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -8px; }
+}
+
+/* Home: card grande, com painel de vidro para o texto ler bem sobre a ilustração */
+.hero { min-height: 340px; padding: 40px 48px 0; }
+.hero .content {
+  align-self: center;
+  margin-bottom: 40px;
+  padding: 28px 30px;
+  border: 1px solid rgba(255, 255, 255, .7);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, .6);
+  box-shadow: 0 12px 32px rgba(15, 42, 61, .08);
+  backdrop-filter: blur(6px);
+}
+.hero .title { font-size: clamp(28px, 2.6vw, 38px); }
+.hero .text { font-size: 15px; }
+.hero .visual { min-height: 260px; }
+.hero .bin { height: 118px; }
+.hero .item { width: 64px; height: 64px; }
+
+/* Materiais/Conteúdos: faixa mais baixa */
+.compact { min-height: 210px; padding: 28px 40px 0; }
+.compact .content { margin-bottom: 28px; }
+.compact .title { font-size: clamp(22px, 2vw, 28px); }
+.compact .text { font-size: 14px; }
+.compact .visual { min-height: 170px; }
+.compact .bin { height: 84px; }
+.compact .item { width: 46px; height: 46px; }
+
+@media (max-width: 900px) {
+  .hero { padding: 32px 28px 0; }
+  .hero .bin { height: 92px; }
+  .compact { padding: 24px 28px 0; }
+  .compact .bin { height: 70px; }
+}
+@media (max-width: 650px) {
+  /* Celular: texto em cima, lixeiras embaixo */
+  .banner { grid-template-columns: minmax(0, 1fr); gap: 4px; border-radius: 20px; }
+  .hero, .compact { padding: 22px 18px 0; }
+  .hero .content { margin-bottom: 0; padding: 20px; }
+  .compact .content { margin-bottom: 0; }
+  .cta { width: 100%; }
+  .hero .visual, .compact .visual { min-height: 150px; }
+  .hero .bin, .compact .bin { height: 72px; }
+  .hero .item, .compact .item { width: 42px; height: 42px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .item { animation: none; }
+}

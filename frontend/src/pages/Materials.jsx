@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Button from '../components/Button.jsx';
 import ChipGroup from '../components/ChipGroup.jsx';
+import GameBanner from '../components/GameBanner.jsx';
 import PointItem from '../components/PointItem.jsx';
 import SearchInput from '../components/SearchInput.jsx';
 import { buscarMateriais, obterMaterial } from '../services/api.js';
@@ -120,7 +121,7 @@ export default function Materials() {
   return (
     <>
       <section className={styles.hero}>
-        <img src="/assets/fundo_materiais.png" alt="" className={styles.heroBg} />
+        <img src="/assets/fundo_busca_materiais.png" alt="" className={styles.heroBg} />
         <div className={styles.heroInner}>
           <div className={styles.heroTop}>
             <div className={styles.heroText}>
@@ -216,6 +217,10 @@ export default function Materials() {
           </>
         )}
       </section>
+
+      <div className={styles.game}>
+        <GameBanner title="Teste seus conhecimentos em reciclagem" text="Teste no jogo da separação se você já sabe para onde vai cada material." />
+      </div>
     </>
   );
 }

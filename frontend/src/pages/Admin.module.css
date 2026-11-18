@@ -10,8 +10,8 @@
   flex-direction: column;
   gap: 18px;
   padding: 36px;
-  border: 1px solid var(--border-default);
-  border-radius: 22px;
+  border: var(--card-border);
+  border-radius: var(--card-radius);
   background: var(--base-white);
   box-shadow: 0 16px 42px rgba(15, 42, 61, .1);
 }
@@ -40,8 +40,8 @@
 .formCard, .listCard {
   min-width: 0;
   padding: 24px;
-  border: 1px solid var(--border-default);
-  border-radius: 20px;
+  border: var(--card-border);
+  border-radius: var(--card-radius);
   background: var(--base-white);
   box-shadow: 0 6px 22px rgba(15, 42, 61, .05);
 }
@@ -114,7 +114,7 @@
   .page { padding: 24px 16px 42px; }
   .header { align-items: flex-start; }
   .header h1 { font-size: 23px; }
-  .formCard, .listCard { padding: 18px; border-radius: 16px; }
+  .formCard, .listCard { padding: 18px; }
   .formGrid { grid-template-columns: minmax(0, 1fr); }
   .wide { grid-column: auto; }
   .loginCard { padding: 26px 22px; }

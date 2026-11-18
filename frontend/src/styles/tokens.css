@@ -15,6 +15,10 @@
   --border-strong: #b1b6be;
   --border-input: #e5e8f0;
 
+  /* Borda padrão dos cards (referência: card de detalhes do material) */
+  --card-border: 1.5px solid var(--border-strong);
+  --card-radius: 20px;
+
   --page-x: 64px;
   --font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }

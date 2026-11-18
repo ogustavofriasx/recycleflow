@@ -7,9 +7,6 @@ import Materials from './pages/Materials.jsx';
 import MapPage from './pages/MapPage.jsx';
 import Projects from './pages/Projects.jsx';
 import GamePage from './pages/Game.jsx';
-
-
-
 import Admin from './pages/Admin.jsx';
 import Contents from './pages/Contents.jsx';
 
@@ -37,9 +34,9 @@ export default function App() {
           <Route path="/conteudos" element={<Contents />} />
           <Route path="/conteudos/:slug" element={<Contents />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/jogo" element={<GamePage />} />
           {/* Qualquer rota desconhecida volta pra Home */}
           <Route path="*" element={<Navigate to="/" replace />} />
-          <Route path="/jogo" element={<GamePage />} />
         </Routes>
       </main>
       <Footer />
