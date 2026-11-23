@@ -82,7 +82,8 @@ arrasta um material de cada vez até o destino correto:
 | Lixeira marrom | Orgânico |
 | Ecoponto | Resíduos que não vão para a coleta seletiva comum (ex.: bitucas de cigarro) |
 
-Cada acerto vale 10 pontos e, certo ou errado, o jogo mostra uma dica de descarte sobre o material.
+Cada acerto aumenta sua sequência e, certo ou errado, o jogo mostra uma dica de descarte sobre o material.
+Caso o jogador erre, a sequência vai à 0, porém o jogo continua.
 Quando o destino correto é o Ecoponto, aparece um atalho para o mapa de pontos de coleta. Ao final,
 o jogador vê a pontuação e pode jogar de novo ou ir direto ao mapa.
 
