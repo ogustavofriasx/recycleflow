@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import ArticleBody from '../components/ArticleBody.jsx';
 import GameBanner from '../components/GameBanner.jsx';
 import { listarConteudos, obterConteudo } from '../services/api.js';
+import { getContentBanner, getContentCover, getReadingTime } from '../utils/conteudos.js';
 import styles from './Contents.module.css';
 
 const formatDate = (value) => {
@@ -13,22 +15,6 @@ const getContentIcon = (type) =>
   type?.toLowerCase() === 'curiosidade'
     ? '/assets/icon-curiosity.svg'
     : '/assets/icon-article.svg';
-
-function renderBody(text) {
-  return text.split(/\n{2,}/).filter(Boolean).map((block, index) => {
-    const heading = block.match(/^#{1,3}\s+(.+)$/);
-    if (heading) return <h2 key={index}>{heading[1]}</h2>;
-    const lines = block.split('\n');
-    if (lines.every((line) => /^[-*]\s+/.test(line))) {
-      return (
-        <ul key={index}>
-          {lines.map((line, lineIndex) => <li key={lineIndex}>{line.replace(/^[-*]\s+/, '')}</li>)}
-        </ul>
-      );
-    }
-    return <p key={index}>{lines.map((line, lineIndex) => <span key={lineIndex}>{line}{lineIndex < lines.length - 1 && <br />}</span>)}</p>;
-  });
-}
 
 export default function Contents() {
   const { slug } = useParams();
@@ -65,29 +51,45 @@ export default function Contents() {
           <p className={styles.message} role="alert">{error}</p>
         ) : content ? (
           <div className={styles.article}>
-            <span className={styles.type}>{content.tipo || 'Conteúdo educativo'}</span>
-            <h1>{content.titulo}</h1>
-            {formatDate(content.publicado_em) && <p className={styles.date}>Publicado em {formatDate(content.publicado_em)}</p>}
-            {content.imagem_url && <img className={styles.image} src={content.imagem_url} alt="" />}
-            {content.resumo && <p className={styles.summary}>{content.resumo}</p>}
-            <div className={styles.body}>{renderBody(content.corpo)}</div>
-            {content.materiais?.length > 0 && (
-              <div className={styles.related}>
-                <h2>Materiais relacionados</h2>
-                <div className={styles.materials}>
-                  {content.materiais.map((material) => (
-                    <Link key={material.id_material} to="/materiais">
-                      {material.nome}
-                    </Link>
-                  ))}
-                </div>
+            <header className={styles.cover} style={{ backgroundImage: `url(${getContentCover(content)})` }}>
+              <div className={styles.coverText}>
+                <span className={styles.type}>{content.tipo || 'Conteúdo educativo'}</span>
+                <h1>{content.titulo}</h1>
               </div>
-            )}
-            {content.fonte_url && (
-              <a className={styles.source} href={content.fonte_url} target="_blank" rel="noreferrer">
-                Consultar fonte
-              </a>
-            )}
+            </header>
+            <div className={styles.reading}>
+              <div className={styles.byline}>
+                {content.autor && <p className={styles.author}>Por <strong>{content.autor}</strong></p>}
+                <p className={styles.meta}>
+                  <span>{getReadingTime(content.corpo)} min de leitura</span>
+                  {formatDate(content.publicado_em) && <span>{formatDate(content.publicado_em)}</span>}
+                  {content.fonte_url && (
+                    <a className={styles.source} href={content.fonte_url} target="_blank" rel="noreferrer">
+                      Consultar fonte ↗
+                    </a>
+                  )}
+                </p>
+              </div>
+              {content.resumo && (
+                <aside className={styles.summary}>
+                  <span>Em resumo</span>
+                  <p>{content.resumo}</p>
+                </aside>
+              )}
+              <ArticleBody className={styles.body} text={content.corpo} />
+              {content.materiais?.length > 0 && (
+                <div className={styles.related}>
+                  <h2>Materiais relacionados</h2>
+                  <div className={styles.materials}>
+                    {content.materiais.map((material) => (
+                      <Link key={material.id_material} to="/materiais">
+                        {material.nome}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         ) : null}
       </article>
@@ -112,7 +114,11 @@ export default function Contents() {
               {item.imagem_url ? (
                 <img className={styles.cardImage} src={item.imagem_url} alt="" />
               ) : (
-                <span className={styles.cardIcon} aria-hidden="true">
+                <span
+                  className={styles.cardIcon}
+                  style={{ backgroundImage: `url(${getContentBanner(item.id_conteudo)})` }}
+                  aria-hidden="true"
+                >
                   <img src={getContentIcon(item.tipo)} alt="" />
                 </span>
               )}

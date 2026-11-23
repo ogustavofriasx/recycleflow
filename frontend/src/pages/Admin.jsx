@@ -66,10 +66,11 @@ const RESOURCES = {
       { name: 'id_categoria', label: 'Categoria', kind: 'select', options: 'categorias', required: true },
       { name: 'descricao', label: 'Descrição', kind: 'textarea' },
       { name: 'reciclavel', label: 'Reciclável', kind: 'optionalBoolean' },
-      { name: 'tipo_descarte', label: 'Tipo de descarte', required: true },
+      { name: 'tipo_descarte', label: 'Tipo de descarte', kind: 'select', options: 'tipos_descarte', textValue: true, required: true },
       { name: 'instrucoes_preparo', label: 'Instruções de preparo', kind: 'textarea' },
       { name: 'cuidados', label: 'Cuidados / descarte', kind: 'textarea' },
       { name: 'verificado_em', label: 'Verificado em', kind: 'datetime' },
+      { name: 'destaque', label: 'Mostrar em "Mais comuns"', kind: 'boolean', default: false, hint: 'Aparece no primeiro filtro da página de materiais. Ideal manter entre 6 e 10.' },
       { name: 'ativo', label: 'Ativo', kind: 'boolean', default: true },
     ],
   },
@@ -93,18 +94,36 @@ const RESOURCES = {
     id: 'id_conteudo',
     fields: [
       { name: 'titulo', label: 'Título', required: true },
-      { name: 'slug', label: 'Slug (URL)', required: true },
+      { name: 'slug', label: 'Slug (URL)', required: true, hint: 'Endereço da página (/conteudos/slug). Preenchido automaticamente a partir do título ao criar; pode ser ajustado.' },
       { name: 'resumo', label: 'Resumo', kind: 'textarea', hint: 'Para conteúdos do tipo curiosidade, este texto aparece no carrossel da Home.' },
       { name: 'corpo', label: 'Conteúdo', kind: 'textarea', rows: 8, required: true },
       { name: 'tipo', label: 'Tipo', hint: 'Use exatamente "curiosidade" para exibir também no carrossel da Home.' },
-      { name: 'imagem_url', label: 'Imagem ou ícone (URL)', hint: 'Opcional. Se vazio, artigos e curiosidades usam ícones padrão. Para curiosidades na Home, a imagem aparece no carrossel.' },
       { name: 'materiais', label: 'Materiais relacionados', kind: 'multiSelect', options: 'materiais', hint: 'Use Ctrl ou Cmd para selecionar mais de um.' },
       { name: 'fonte_url', label: 'Fonte da informação' },
+      { name: 'autor', label: 'Autor', hint: 'Opcional. Autor da fonte principal usada na verificação (pessoa, órgão ou instituição). Aparece antes do texto.' },
       { name: 'verificado_em', label: 'Verificado em', kind: 'datetime' },
       { name: 'publicado', label: 'Publicado', kind: 'boolean', default: false },
     ],
   },
 };
+
+// Abas com "Desativar" (padrão) e também "Excluir" de vez; o texto explica o que acontece junto
+const HARD_DELETE_WARNINGS = {
+  instituicoes: 'Os pontos de coleta e projetos ligados a ela continuam no site, mas ficam sem instituição responsável.',
+  materiais: 'O material também será removido de todos os pontos de coleta e conteúdos em que aparece.',
+  'pontos-coleta': 'Os horários, os materiais aceitos e os favoritos deste ponto também serão apagados.',
+};
+
+// "Vidro reciclado: 5 fatos" -> "vidro-reciclado-5-fatos"
+const slugify = (value) =>
+  value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 220)
+    .replace(/-+$/, '');
 
 const emptyForm = (resource) =>
   Object.fromEntries(RESOURCES[resource].fields.map((field) => {
@@ -178,7 +197,7 @@ function payloadFromForm(resource, form, existingRecord) {
     } else if (field.kind === 'select' && field.nullable) {
       payload[field.name] = value === '' ? null : Number(value);
     } else if (field.kind === 'select') {
-      payload[field.name] = Number(value);
+      payload[field.name] = field.textValue ? value : Number(value);
     } else {
       payload[field.name] = value.trim() || null;
     }
@@ -206,7 +225,7 @@ export default function Admin() {
   const [senha, setSenha] = useState('');
   const [resource, setResource] = useState('instituicoes');
   const [records, setRecords] = useState({});
-  const [options, setOptions] = useState({ categorias: [], tipos_ponto: [] });
+  const [options, setOptions] = useState({ categorias: [], tipos_ponto: [], tipos_descarte: [] });
   const [form, setForm] = useState(() => emptyForm('instituicoes'));
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -222,6 +241,7 @@ export default function Admin() {
   const fieldOptions = useMemo(() => ({
     categorias: options.categorias,
     tipos_ponto: options.tipos_ponto,
+    tipos_descarte: (options.tipos_descarte ?? []).map((tipo) => ({ value: tipo, nome: tipo })),
     instituicoes: institutions.map((item) => ({ id_instituicao: item.id_instituicao, nome: item.nome })),
     materiais: (records.materiais ?? []).map((item) => ({
       id_material: item.id_material,
@@ -301,6 +321,14 @@ export default function Admin() {
   };
 
   const handleFieldChange = (field, value) => {
+    // Ao criar um conteúdo, o slug acompanha o título até ser editado à mão.
+    if (resource === 'conteudos' && field.name === 'titulo' && editingId == null) {
+      setForm((current) => {
+        const slugIsAuto = !current.slug || current.slug === slugify(current.titulo ?? '');
+        return { ...current, titulo: value, slug: slugIsAuto ? slugify(value) : current.slug };
+      });
+      return;
+    }
     if (field.kind !== 'cep') {
       setForm((current) => ({ ...current, [field.name]: value }));
       return;
@@ -370,15 +398,20 @@ export default function Admin() {
     }
   };
 
-  const handleDelete = async (record) => {
+  const handleDelete = async (record, { permanente = false } = {}) => {
     const id = record[RESOURCES[resource].id];
-    const verb = ['projetos', 'conteudos'].includes(resource) ? 'excluir permanentemente' : 'desativar';
-    if (!window.confirm(`Deseja ${verb} "${recordTitle(resource, record)}"?`)) return;
+    const hardDelete = permanente || ['projetos', 'conteudos'].includes(resource);
+    const title = recordTitle(resource, record);
+    const consequence = HARD_DELETE_WARNINGS[resource];
+    const question = permanente && consequence
+      ? `Excluir permanentemente "${title}"?\n\n${consequence} Esta ação não pode ser desfeita.\n\nSe quiser apenas escondê-lo do site, use "Desativar".`
+      : `Deseja ${hardDelete ? 'excluir permanentemente' : 'desativar'} "${title}"?`;
+    if (!window.confirm(question)) return;
     setError('');
     setNotice('');
     try {
-      await deleteAdminResource(resource, id);
-      setNotice(['projetos', 'conteudos'].includes(resource) ? 'Registro excluído.' : 'Registro desativado.');
+      await deleteAdminResource(resource, id, { permanente });
+      setNotice(hardDelete ? 'Registro excluído.' : 'Registro desativado.');
       if (editingId === id) {
         setEditingId(null);
         setForm(emptyForm(resource));
@@ -501,8 +534,8 @@ export default function Admin() {
                     {field.kind !== 'multiSelect' && <option value="">{field.nullable ? 'Nenhuma' : 'Selecione'}</option>}
                     {(fieldOptions[field.options] ?? []).map((option) => (
                       <option
-                        key={option.id_categoria ?? option.id_tipo ?? option.id_instituicao ?? option.id_material}
-                        value={option.id_categoria ?? option.id_tipo ?? option.id_instituicao ?? option.id_material}
+                        key={option.value ?? option.id_categoria ?? option.id_tipo ?? option.id_instituicao ?? option.id_material}
+                        value={option.value ?? option.id_categoria ?? option.id_tipo ?? option.id_instituicao ?? option.id_material}
                       >
                         {option.nome}
                       </option>
@@ -571,6 +604,11 @@ export default function Admin() {
                           {['projetos', 'conteudos'].includes(resource) ? 'Excluir' : 'Desativar'}
                         </button>
                       ) : null}
+                      {HARD_DELETE_WARNINGS[resource] && (
+                        <button type="button" className={styles.dangerButton} onClick={() => handleDelete(record, { permanente: true })}>
+                          Excluir
+                        </button>
+                      )}
                     </div>
                   </li>
                 );

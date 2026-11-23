@@ -8,7 +8,10 @@ load_dotenv()
 
 DATABASE_URL = os.getenv("URL")
 
-engine = create_engine(DATABASE_URL)
+# O Neon suspende o banco quando fica ocioso e derruba as conexões abertas.
+# pool_pre_ping testa a conexão antes de usar (e reconecta se ela caiu);
+# pool_recycle descarta conexões com mais de 5 min para não reaproveitar conexões velhas.
+engine = create_engine(DATABASE_URL, pool_pre_ping=True, pool_recycle=300)
 
 SessionLocal = sessionmaker(bind=engine, autoflush=False)
 

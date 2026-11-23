@@ -237,6 +237,7 @@ CREATE TABLE conteudo_educativo (
     tipo VARCHAR(40),
     imagem_url TEXT,
     fonte_url TEXT,
+    autor VARCHAR(150),
     publicado BOOLEAN NOT NULL DEFAULT FALSE,
     publicado_em TIMESTAMPTZ,
     verificado_em TIMESTAMPTZ,

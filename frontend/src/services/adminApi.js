@@ -47,5 +47,5 @@ export const saveAdminResource = (resource, id, body) =>
     method: id == null ? 'POST' : 'PUT',
     body,
   });
-export const deleteAdminResource = (resource, id) =>
-  request(`/admin/${resource}/${id}`, { method: 'DELETE' });
+export const deleteAdminResource = (resource, id, { permanente = false } = {}) =>
+  request(`/admin/${resource}/${id}${permanente ? '?permanente=true' : ''}`, { method: 'DELETE' });

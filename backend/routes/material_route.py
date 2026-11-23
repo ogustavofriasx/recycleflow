@@ -13,7 +13,7 @@ router = APIRouter(prefix="/materiais", tags=["Materiais"])
 # Campos devolvidos para o frontend (mesma forma na lista e no detalhe)
 CAMPOS_MATERIAL = """
     m.id_material, m.nome, m.descricao, m.reciclavel, m.tipo_descarte,
-    m.instrucoes_preparo, m.cuidados, m.palavras_chave,
+    m.instrucoes_preparo, m.cuidados, m.palavras_chave, m.destaque,
     m.id_categoria, c.nome AS categoria, c.icone AS categoria_icone, c.cor_hex AS categoria_cor
 """
 

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy import text
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
@@ -12,6 +12,7 @@ from schemas import (
     AdminPontoInput,
     AdminProjetoInput,
     AdminToken,
+    TIPOS_DESCARTE,
 )
 from security import TOKEN_LIFETIME_SECONDS, create_access_token, require_admin, verify_password
 
@@ -68,7 +69,11 @@ def opcoes_admin(_: dict = Depends(require_admin), db: Session = Depends(get_db)
             text("SELECT id_categoria, nome FROM categoria_material ORDER BY nome")
         ).mappings().all()
         tipos = db.execute(text("SELECT id_tipo, nome FROM tipo_ponto_coleta ORDER BY nome")).mappings().all()
-        return {"categorias": [dict(row) for row in categorias], "tipos_ponto": [dict(row) for row in tipos]}
+        return {
+            "categorias": [dict(row) for row in categorias],
+            "tipos_ponto": [dict(row) for row in tipos],
+            "tipos_descarte": TIPOS_DESCARTE,
+        }
     except SQLAlchemyError as erro:
         erro_banco(erro)
 
@@ -143,16 +148,26 @@ def admin_atualizar_instituicao(
 
 @router.delete("/instituicoes/{id_instituicao}", status_code=status.HTTP_204_NO_CONTENT)
 def admin_desativar_instituicao(
-    id_instituicao: int, _: dict = Depends(require_admin), db: Session = Depends(get_db)
+    id_instituicao: int,
+    permanente: bool = Query(False, description="Exclui de vez; pontos e projetos ficam sem instituição"),
+    _: dict = Depends(require_admin),
+    db: Session = Depends(get_db),
 ):
+    # ponto_coleta e projeto_iniciativa usam ON DELETE SET NULL: continuam existindo, sem instituição.
+    sql = (
+        "DELETE FROM instituicao WHERE id_instituicao=:id RETURNING id_instituicao"
+        if permanente
+        else "UPDATE instituicao SET ativo=FALSE WHERE id_instituicao=:id RETURNING id_instituicao"
+    )
     try:
-        result = db.execute(
-            text("UPDATE instituicao SET ativo=FALSE WHERE id_instituicao=:id RETURNING id_instituicao"),
-            {"id": id_instituicao},
-        ).first()
+        result = db.execute(text(sql), {"id": id_instituicao}).first()
         if result is None:
+            db.rollback()
             raise HTTPException(status_code=404, detail="Instituição não encontrada")
         db.commit()
+    except IntegrityError as erro:
+        db.rollback()
+        erro_integridade(erro)
     except SQLAlchemyError as erro:
         db.rollback()
         erro_banco(erro)
@@ -163,7 +178,7 @@ def admin_desativar_instituicao(
 MATERIAL_SELECT = """
     SELECT m.id_material, m.id_categoria, m.nome, m.descricao, m.reciclavel, m.tipo_descarte,
            m.instrucoes_preparo, m.cuidados, m.fonte_url, m.verificado_em, m.ativo,
-           m.palavras_chave, c.nome AS categoria
+           m.palavras_chave, m.destaque, c.nome AS categoria
     FROM material m JOIN categoria_material c ON c.id_categoria=m.id_categoria
 """
 
@@ -185,10 +200,10 @@ def admin_criar_material(
             text("""
                 INSERT INTO material
                     (id_categoria, nome, descricao, reciclavel, tipo_descarte, instrucoes_preparo,
-                     cuidados, fonte_url, verificado_em, palavras_chave, ativo)
+                     cuidados, fonte_url, verificado_em, palavras_chave, destaque, ativo)
                 VALUES
                     (:id_categoria, :nome, :descricao, :reciclavel, :tipo_descarte, :instrucoes_preparo,
-                     :cuidados, :fonte_url, :verificado_em, :palavras_chave, :ativo)
+                     :cuidados, :fonte_url, :verificado_em, :palavras_chave, :destaque, :ativo)
                 RETURNING id_material
             """),
             payload.model_dump(),
@@ -213,7 +228,8 @@ def admin_atualizar_material(
                 UPDATE material SET id_categoria=:id_categoria, nome=:nome, descricao=:descricao,
                     reciclavel=:reciclavel, tipo_descarte=:tipo_descarte,
                     instrucoes_preparo=:instrucoes_preparo, cuidados=:cuidados, fonte_url=:fonte_url,
-                    verificado_em=:verificado_em, palavras_chave=:palavras_chave, ativo=:ativo
+                    verificado_em=:verificado_em, palavras_chave=:palavras_chave, destaque=:destaque,
+                    ativo=:ativo
                 WHERE id_material=:id RETURNING id_material
             """),
             {**payload.model_dump(), "id": id_material},
@@ -231,15 +247,33 @@ def admin_atualizar_material(
 
 
 @router.delete("/materiais/{id_material}", status_code=status.HTTP_204_NO_CONTENT)
-def admin_desativar_material(id_material: int, _: dict = Depends(require_admin), db: Session = Depends(get_db)):
+def admin_desativar_material(
+    id_material: int,
+    permanente: bool = Query(False, description="Exclui de vez, removendo também os vínculos com pontos e conteúdos"),
+    _: dict = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
     try:
-        row = db.execute(
-            text("UPDATE material SET ativo=FALSE WHERE id_material=:id RETURNING id_material"),
-            {"id": id_material},
-        ).first()
+        if permanente:
+            # ponto_material usa ON DELETE RESTRICT: remove os vínculos antes, na mesma transação.
+            # material_conteudo usa ON DELETE CASCADE e é limpo automaticamente.
+            db.execute(text("DELETE FROM ponto_material WHERE id_material=:id"), {"id": id_material})
+            row = db.execute(
+                text("DELETE FROM material WHERE id_material=:id RETURNING id_material"),
+                {"id": id_material},
+            ).first()
+        else:
+            row = db.execute(
+                text("UPDATE material SET ativo=FALSE WHERE id_material=:id RETURNING id_material"),
+                {"id": id_material},
+            ).first()
         if row is None:
+            db.rollback()
             raise HTTPException(status_code=404, detail="Material não encontrado")
         db.commit()
+    except IntegrityError as erro:
+        db.rollback()
+        erro_integridade(erro)
     except SQLAlchemyError as erro:
         db.rollback()
         erro_banco(erro)
@@ -371,15 +405,27 @@ def admin_atualizar_ponto(
 
 
 @router.delete("/pontos-coleta/{id_ponto}", status_code=status.HTTP_204_NO_CONTENT)
-def admin_desativar_ponto(id_ponto: int, _: dict = Depends(require_admin), db: Session = Depends(get_db)):
+def admin_desativar_ponto(
+    id_ponto: int,
+    permanente: bool = Query(False, description="Exclui de vez, junto com horários, materiais aceitos e favoritos"),
+    _: dict = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    # horario_ponto, ponto_material e ponto_favorito usam ON DELETE CASCADE.
+    sql = (
+        "DELETE FROM ponto_coleta WHERE id_ponto=:id RETURNING id_ponto"
+        if permanente
+        else "UPDATE ponto_coleta SET ativo=FALSE WHERE id_ponto=:id RETURNING id_ponto"
+    )
     try:
-        row = db.execute(
-            text("UPDATE ponto_coleta SET ativo=FALSE WHERE id_ponto=:id RETURNING id_ponto"),
-            {"id": id_ponto},
-        ).first()
+        row = db.execute(text(sql), {"id": id_ponto}).first()
         if row is None:
+            db.rollback()
             raise HTTPException(status_code=404, detail="Ponto de coleta não encontrado")
         db.commit()
+    except IntegrityError as erro:
+        db.rollback()
+        erro_integridade(erro)
     except SQLAlchemyError as erro:
         db.rollback()
         erro_banco(erro)
@@ -481,7 +527,7 @@ def admin_listar_conteudos(_: dict = Depends(require_admin), db: Session = Depen
         rows = db.execute(
             text("""
                 SELECT c.id_conteudo, c.titulo, c.slug, c.resumo, c.corpo, c.tipo, c.imagem_url,
-                       c.fonte_url, c.publicado, c.publicado_em, c.verificado_em,
+                       c.fonte_url, c.autor, c.publicado, c.publicado_em, c.verificado_em,
                        COALESCE((
                            SELECT json_agg(mc.id_material ORDER BY mc.id_material)
                            FROM material_conteudo mc WHERE mc.id_conteudo=c.id_conteudo
@@ -501,10 +547,10 @@ def salvar_conteudo(db: Session, payload: AdminConteudoInput, id_conteudo: int |
         result = db.execute(
             text("""
                     INSERT INTO conteudo_educativo
-                        (titulo, slug, resumo, corpo, tipo, imagem_url, fonte_url, publicado,
+                        (titulo, slug, resumo, corpo, tipo, imagem_url, fonte_url, autor, publicado,
                          publicado_em, verificado_em)
                     VALUES
-                        (:titulo, :slug, :resumo, :corpo, :tipo, :imagem_url, :fonte_url, :publicado,
+                        (:titulo, :slug, :resumo, :corpo, :tipo, :imagem_url, :fonte_url, :autor, :publicado,
                          CASE WHEN :publicado THEN COALESCE(:publicado_em, NOW()) ELSE NULL END,
                          :verificado_em)
                     RETURNING id_conteudo
@@ -516,7 +562,7 @@ def salvar_conteudo(db: Session, payload: AdminConteudoInput, id_conteudo: int |
         result = db.execute(
             text("""
                     UPDATE conteudo_educativo SET titulo=:titulo, slug=:slug, resumo=:resumo, corpo=:corpo,
-                        tipo=:tipo, imagem_url=:imagem_url, fonte_url=:fonte_url, publicado=:publicado,
+                        tipo=:tipo, imagem_url=:imagem_url, fonte_url=:fonte_url, autor=:autor, publicado=:publicado,
                         publicado_em=CASE WHEN :publicado
                             THEN COALESCE(:publicado_em, publicado_em, NOW()) ELSE NULL END,
                         verificado_em=:verificado_em

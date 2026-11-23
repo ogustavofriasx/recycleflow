@@ -4,7 +4,7 @@ Servem para documentar o /docs (aba "Schemas") e garantir que cada rota
 devolva só os campos listados aqui.
 """
 from datetime import date, datetime
-from typing import Optional
+from typing import Literal, Optional, get_args
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -14,19 +14,27 @@ class Erro(BaseModel):
 
 
 # ---------------------------------------------------------------- Materiais
+# Lista fixa de tipos de descarte (igual ao CHECK da migração 006)
+TipoDescarte = Literal[
+    "Coleta seletiva", "Ecoponto", "Logística reversa", "Ponto de coleta específico",
+    "Lixo comum", "Compostagem", "Doação",
+]
+TIPOS_DESCARTE = list(get_args(TipoDescarte))
+
 class Material(BaseModel):
     id_material: int
     nome: str = Field(examples=["Pilhas e baterias"])
     descricao: Optional[str] = Field(None, description="Por que descartar corretamente")
     reciclavel: Optional[bool] = None
-    tipo_descarte: str = Field(examples=["especial", "coleta_seletiva"])
+    tipo_descarte: str = Field(examples=["Logística reversa", "Coleta seletiva"])
     instrucoes_preparo: Optional[str] = None
     cuidados: Optional[str] = Field(None, description="Onde/como descartar")
     palavras_chave: list[str] = Field(default_factory=list, examples=[["pilha", "bateria"]])
     id_categoria: int
-    categoria: str = Field(examples=["Resíduos eletroeletrônicos"])
+    categoria: str = Field(examples=["Eletroeletrônicos"])
     categoria_icone: Optional[str] = None
     categoria_cor: Optional[str] = Field(None, examples=["#7C3AED"])
+    destaque: bool = Field(False, description="Aparece em \"Mais comuns\" na página de materiais")
 
 
 class PontoResumo(BaseModel):
@@ -123,6 +131,7 @@ class ConteudoResumo(BaseModel):
 class Conteudo(ConteudoResumo):
     corpo: str = Field(description="Texto completo (Markdown)")
     fonte_url: Optional[str] = None
+    autor: Optional[str] = Field(None, description="Autor da fonte principal")
     materiais: list[MaterialAceito] = Field(default_factory=list, description="Materiais relacionados")
 
 
@@ -155,12 +164,13 @@ class AdminMaterialInput(BaseModel):
     nome: str = Field(min_length=1, max_length=150)
     descricao: Optional[str] = None
     reciclavel: Optional[bool] = None
-    tipo_descarte: str = Field(min_length=1, max_length=40)
+    tipo_descarte: TipoDescarte
     instrucoes_preparo: Optional[str] = None
     cuidados: Optional[str] = None
     fonte_url: Optional[str] = None
     verificado_em: Optional[datetime] = None
     palavras_chave: list[str] = Field(default_factory=list)
+    destaque: bool = False
     ativo: bool = True
 
 
@@ -216,6 +226,7 @@ class AdminConteudoInput(BaseModel):
     tipo: Optional[str] = Field(None, max_length=40)
     imagem_url: Optional[str] = None
     fonte_url: Optional[str] = None
+    autor: Optional[str] = Field(None, max_length=150)
     publicado: bool = False
     publicado_em: Optional[datetime] = None
     verificado_em: Optional[datetime] = None
