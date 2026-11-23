@@ -52,4 +52,5 @@ export const pointTypeFilters = [
   { value: 'todos', label: 'Todos' },
   { value: 'ecoponto', label: 'Ecopontos' },
   { value: 'cooperativa', label: 'Cooperativas' },
+  { value: 'logistica-reversa', label: 'Logística reversa' },
 ];

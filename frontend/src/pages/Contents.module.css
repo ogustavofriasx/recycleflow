@@ -62,6 +62,8 @@
   backdrop-filter: blur(6px);
   text-align: center;
 }
+/* Título do banner no azul do projeto (o verde fica claro demais para texto sobre branco) */
+.article .coverText h1 { color: var(--blue-primary); }
 .byline { width: 100%; padding-bottom: 14px; border-bottom: 1px solid var(--border-default); color: var(--text-gray); font-size: 13px; }
 .byline strong { color: var(--text-dark); }
 
