@@ -66,20 +66,34 @@
 }
 
 .itemArrastavel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   cursor: grab;
   transition: transform 0.2s ease;
   user-select: none;
 }
 
-.itemArrastavel:active {
-  cursor: grabbing;
-  transform: scale(1.08);
-}
-
 .itemArrastavel img {
+  display: block;
   width: 110px;
   height: 110px;
   object-fit: contain;
+  margin: 0 auto;
+}
+
+.destinoCard img {
+  display: block;
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin: 0 auto 0.5rem;
+}
+
+.itemArrastavel:active {
+  cursor: grabbing;
+  transform: scale(1.08);
 }
 
 .itemNome {
@@ -115,13 +129,6 @@
 .destinoCard:hover {
   border-color: var(--green-accent);
   transform: translateY(-4px);
-}
-
-.destinoCard img {
-  width: 80px;
-  height: 80px;
-  object-fit: contain;
-  margin-bottom: 0.5rem;
 }
 
 .destinoCard span {
