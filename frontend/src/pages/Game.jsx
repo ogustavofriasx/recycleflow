@@ -18,21 +18,27 @@ export default function GamePage() {
     embaralharArray(MATERIAIS)
   );
   const [indiceAtual, setIndiceAtual] = useState(0);
-  const [pontos, setPontos] = useState(0);
+  const [sequencia, setSequencia] = useState(0);
+  const [maiorSequencia, setMaiorSequencia] = useState(0);
   const [feedback, setFeedback] = useState(null);
   const navigate = useNavigate();
 
   const materialAtual = materiaisRodada[indiceAtual];
   const jogoFinalizado = indiceAtual >= materiaisRodada.length;
+  const ehUltimoItem = indiceAtual === materiaisRodada.length - 1;
 
   // Arrasta guardando o ID do material
   const handleDragStart = (e) => {
-    if (!materialAtual) return;
+    if (!materialAtual || feedback) {
+      e.preventDefault();
+      return;
+    }
     e.dataTransfer.setData('text/plain', materialAtual.id);
   };
 
-  // Permite que a lixeira receba o item
+  // Permite que a lixeira receba o item apenas quando não há feedback aberto
   const handleDragOver = (e) => {
+    if (feedback) return;
     e.preventDefault();
   };
 
@@ -44,31 +50,37 @@ export default function GamePage() {
     const acertou = materialAtual.destinoCorreto === destinoId;
 
     if (acertou) {
-      setPontos((prev) => prev + 10);
+      setSequencia((prev) => {
+        const novaSequencia = prev + 1;
+        setMaiorSequencia((recorde) => Math.max(recorde, novaSequencia));
+        return novaSequencia;
+      });
       setFeedback({
         tipo: 'acerto',
         texto: `Muito bem! ${materialAtual.dica}`,
         mostrarMapa: destinoId === 'ecoponto',
       });
     } else {
+      setSequencia(0);
       setFeedback({
         tipo: 'erro',
-        texto: `Ops! Esse não é o local ideal. ${materialAtual.dica}`,
+        texto: `Ops! ${materialAtual.dica}`,
         mostrarMapa: materialAtual.destinoCorreto === 'ecoponto',
       });
     }
+  };
 
-    // Avança para o próximo materiaal depois de 2.5 segundos
-    setTimeout(() => {
-      setFeedback(null);
-      setIndiceAtual((prev) => prev + 1);
-    }, 2500);
+  // Avança para o próximo item ao clicar no botão
+  const handleProximo = () => {
+    setFeedback(null);
+    setIndiceAtual((prev) => prev + 1);
   };
 
   const reiniciarJogo = () => {
     setMateriaisRodada(embaralharArray(MATERIAIS));
     setIndiceAtual(0);
-    setPontos(0);
+    setSequencia(0);
+    setMaiorSequencia(0);
     setFeedback(null);
   };
 
@@ -82,7 +94,7 @@ export default function GamePage() {
       <div className={styles.container}>
         <div className={styles.header}>
           <h1>Desafio da Reciclagem</h1>
-          <span className={styles.placar}>Pontos: {pontos}</span>
+          <span className={styles.placar}>Sequência: {sequencia}</span>
         </div>
 
         {!jogoFinalizado ? (
@@ -90,14 +102,16 @@ export default function GamePage() {
             <div className={styles.areaItem}>
               <div
                 className={styles.itemArrastavel}
-                draggable
+                draggable={!feedback}
                 onDragStart={handleDragStart}
               >
                 <img src={materialAtual.img} alt={materialAtual.nome} />
                 <p className={styles.itemNome}>{materialAtual.nome}</p>
               </div>
               <span className={styles.instrucao}>
-                Arraste o item acima até a lixeira correta ou ao Ecoponto
+                {feedback
+                  ? 'Leia a dica abaixo e clique em Próximo para continuar'
+                  : 'Arraste o item acima até a lixeira correta ou ao Ecoponto'}
               </span>
             </div>
 
@@ -122,23 +136,28 @@ export default function GamePage() {
                 }`}
               >
                 <p>{feedback.texto}</p>
-                {feedback.mostrarMapa && (
-                  <div className={styles.acoesExtras}>
+                <div className={styles.acoesExtras}>
+                  {feedback.mostrarMapa && (
                     <button
                       className={`${styles.btn} ${styles.btnSecundario}`}
                       onClick={() => navigate('/mapa')} // leva pro mapa
                     >
                       Ver Ecopontos na cidade
                     </button>
-                  </div>
-                )}
+                  )}
+                  <button className={styles.btn} onClick={handleProximo}>
+                    {ehUltimoItem ? 'Ver resultado' : 'Próximo'}
+                  </button>
+                </div>
               </div>
             )}
           </>
         ) : (
           <div className={styles.areaItem}>
             <h2>Parabéns! Você concluiu o desafio.</h2>
-            <p className={styles.itemNome}>Pontuação final: {pontos} pontos</p>
+            <p className={styles.itemNome}>
+              Sequência final: {sequencia} | Maior sequência: {maiorSequencia}
+            </p>
             <div className={styles.acoesExtras}>
               <button className={styles.btn} onClick={reiniciarJogo}>
                 Jogar Novamente
