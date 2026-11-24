@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import ArticleBody from '../components/ArticleBody.jsx';
 import GameBanner from '../components/GameBanner.jsx';
 import { listarConteudos, obterConteudo } from '../services/api.js';
-import { getContentBanner, getContentCover, getReadingTime } from '../utils/conteudos.js';
+import { contentTypeLabel, getContentBanner, getContentCover, getReadingTime, isGame } from '../utils/conteudos.js';
 import styles from './Contents.module.css';
 
 const formatDate = (value) => {
@@ -12,7 +12,7 @@ const formatDate = (value) => {
 };
 
 const getContentIcon = (type) =>
-  type?.toLowerCase() === 'curiosidade'
+  isGame(type) ? '/assets/icon-game.svg' : type?.toLowerCase() === 'curiosidade'
     ? '/assets/icon-curiosity.svg'
     : '/assets/icon-article.svg';
 
@@ -53,7 +53,7 @@ export default function Contents() {
           <div className={styles.article}>
             <header className={styles.cover} style={{ backgroundImage: `url(${getContentCover(content)})` }}>
               <div className={styles.coverText}>
-                <span className={styles.type}>{content.tipo || 'Conteúdo educativo'}</span>
+                <span className={styles.type}>{contentTypeLabel(content.tipo) || 'Conteúdo educativo'}</span>
                 <h1>{content.titulo}</h1>
               </div>
             </header>
@@ -63,7 +63,7 @@ export default function Contents() {
                 <p className={styles.meta}>
                   <span>{getReadingTime(content.corpo)} min de leitura</span>
                   {formatDate(content.publicado_em) && <span>{formatDate(content.publicado_em)}</span>}
-                  {content.fonte_url && (
+                  {content.fonte_url && !isGame(content.tipo) && (
                     <a className={styles.source} href={content.fonte_url} target="_blank" rel="noreferrer">
                       Consultar fonte ↗
                     </a>
@@ -75,6 +75,15 @@ export default function Contents() {
                   <span>Em resumo</span>
                   <p>{content.resumo}</p>
                 </aside>
+              )}
+              {isGame(content.tipo) && content.fonte_url && (
+                <div className={styles.gameAccess}>
+                  <a className={styles.gameLink} href={content.fonte_url} target="_blank" rel="noopener noreferrer"
+                    aria-label={`Acessar jogo: ${content.titulo} (abre em nova aba)`}>
+                    Acessar jogo <span aria-hidden="true">↗</span>
+                  </a>
+                  <p>Abre a página do jogo em uma nova aba.</p>
+                </div>
               )}
               <ArticleBody className={styles.body} text={content.corpo} />
               {content.materiais?.length > 0 && (
@@ -101,7 +110,7 @@ export default function Contents() {
       <header className={styles.header}>
         <span className={styles.eyebrow}>APRENDA A DESCARTAR MELHOR</span>
         <h1>Conteúdos educativos</h1>
-        <p>Artigos, dicas e curiosidades sobre reciclagem e descarte correto.</p>
+        <p>Artigos, dicas, curiosidades e jogos educativos sobre reciclagem e descarte correto.</p>
       </header>
       {loading ? (
         <p className={styles.message}>Carregando conteúdos...</p>
@@ -116,16 +125,18 @@ export default function Contents() {
               ) : (
                 <span
                   className={styles.cardIcon}
-                  style={{ backgroundImage: `url(${getContentBanner(item.id_conteudo)})` }}
+                  style={{ backgroundImage: isGame(item.tipo) ? 'none' : `url(${getContentBanner(item.id_conteudo)})` }}
                   aria-hidden="true"
                 >
                   <img src={getContentIcon(item.tipo)} alt="" />
                 </span>
               )}
-              <span className={styles.type}>{item.tipo || 'Conteúdo educativo'}</span>
+              <span className={styles.type}>{contentTypeLabel(item.tipo)}</span>
               <h2>{item.titulo}</h2>
               {item.resumo && <p>{item.resumo}</p>}
-              <Link to={`/conteudos/${item.slug}`} className={styles.readMore}>Ler conteúdo ›</Link>
+              <Link to={`/conteudos/${item.slug}`} className={styles.readMore}>
+                {isGame(item.tipo) ? 'Conhecer o jogo' : 'Ler conteúdo'} ›
+              </Link>
             </article>
           ))}
         </div>

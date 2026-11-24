@@ -3,6 +3,7 @@ export const projectFilters = [
   { value: 'prefeitura', label: 'Prefeitura' },
   { value: 'cooperativa', label: 'Cooperativas' },
   { value: 'ong', label: 'ONGs' },
+  { value: 'jogo', label: 'Jogos educativos' },
 ];
 
 // Indicadores FIXOS (ainda sem tabela no banco). Conferir a fonte antes de publicar.
