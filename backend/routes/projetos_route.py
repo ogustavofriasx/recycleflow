@@ -13,7 +13,7 @@ router = APIRouter(prefix="/projetos", tags=["Projetos e Iniciativas"])
 # Só projetos publicados, já com a instituição responsável
 QUERY_PROJETOS = """
     SELECT pr.id_projeto, pr.titulo, pr.descricao, pr.tipo, pr.data_inicio, pr.data_fim,
-           pr.fonte_url, pr.id_instituicao,
+           pr.fonte_url, pr.verificado_em, pr.id_instituicao,
            i.nome AS instituicao, i.tipo AS instituicao_tipo
     FROM projeto_iniciativa pr
     LEFT JOIN instituicao i ON i.id_instituicao = pr.id_instituicao

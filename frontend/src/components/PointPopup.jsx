@@ -1,4 +1,8 @@
+import SourceInfo from './SourceInfo.jsx';
 import styles from './PointPopup.module.css';
+
+// "(19) 3536-5298" -> "tel:+551935365298"
+const telHref = (phone) => `tel:+55${phone.replace(/\D/g, '')}`;
 
 export default function PointPopup({ point, onClose }) {
   if (!point) return null;
@@ -34,7 +38,9 @@ export default function PointPopup({ point, onClose }) {
           </span>
           <div className={styles.infoText}>
             <span className={styles.label}>Horário de funcionamento</span>
-            <p className={styles.value}>{point.hours}</p>
+            <ul className={styles.hours}>
+              {point.hours.map((linha) => <li key={linha}>{linha}</li>)}
+            </ul>
           </div>
         </div>
         <div className={styles.infoRow}>
@@ -46,6 +52,28 @@ export default function PointPopup({ point, onClose }) {
             <p className={styles.value}>{point.materialsLabel}</p>
           </div>
         </div>
+        {point.phone && (
+          <div className={styles.infoRow}>
+            <span className={styles.infoIcon} aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2Z" /></svg>
+            </span>
+            <div className={styles.infoText}>
+              <span className={styles.label}>Telefone</span>
+              <a className={styles.contact} href={telHref(point.phone)}>{point.phone}</a>
+            </div>
+          </div>
+        )}
+        {point.notes && (
+          <div className={styles.infoRow}>
+            <span className={styles.infoIcon} aria-hidden="true">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 11v5M12 8h.01" /></svg>
+            </span>
+            <div className={styles.infoText}>
+              <span className={styles.label}>Observações</span>
+              <p className={styles.value}>{point.notes}</p>
+            </div>
+          </div>
+        )}
         {(point.hoursNote || point.position === null) && (
           <div className={styles.note}>
             {point.hoursNote && <p>{point.hoursNote}</p>}
@@ -57,6 +85,7 @@ export default function PointPopup({ point, onClose }) {
           Como chegar
           <span aria-hidden="true">↗</span>
         </a>
+        <SourceInfo verifiedAt={point.verifiedAt} />
       </div>
     </div>
   );

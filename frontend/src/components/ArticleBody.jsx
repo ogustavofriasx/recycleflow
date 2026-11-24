@@ -34,11 +34,26 @@ const components = {
   ),
 };
 
+// Modo compacto (descrição de cards): só formatação de texto. Links, imagens e tabelas
+// viram texto simples (o card já é um link; link dentro de link não é permitido) e
+// títulos viram um parágrafo em negrito.
+const COMPACT_ELEMENTS = ['p', 'strong', 'em', 'del', 'ul', 'ol', 'li', 'br', 'code', 'blockquote'];
+const compactHeading = ({ node, ...props }) => <p><strong {...props} /></p>;
+const compactComponents = {
+  h1: compactHeading, h2: compactHeading, h3: compactHeading,
+  h4: compactHeading, h5: compactHeading, h6: compactHeading,
+};
+
 // HTML colado no texto não é executado (react-markdown ignora HTML por padrão).
-export default function ArticleBody({ text, className }) {
+export default function ArticleBody({ text, className, compact = false }) {
   return (
     <div className={className}>
-      <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} components={components}>
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm, remarkBreaks]}
+        components={compact ? compactComponents : components}
+        allowedElements={compact ? [...COMPACT_ELEMENTS, 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'] : undefined}
+        unwrapDisallowed={compact}
+      >
         {normalizeBody(text)}
       </ReactMarkdown>
     </div>

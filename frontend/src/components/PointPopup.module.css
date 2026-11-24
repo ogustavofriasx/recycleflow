@@ -64,6 +64,10 @@
 .label { color: var(--text-gray); font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
 .address, .value { color: var(--text-dark); font-size: 14px; line-height: 1.5; overflow-wrap: anywhere; }
 .address { font-weight: 600; }
+.hours { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 2px; color: var(--text-dark); font-size: 14px; line-height: 1.5; }
+.contact { width: fit-content; color: var(--blue-primary); font-size: 14px; font-weight: 600; overflow-wrap: anywhere; }
+.contact:hover { text-decoration: underline; }
+.contact:focus-visible { outline: 2px solid var(--blue-primary); outline-offset: 2px; border-radius: 3px; }
 .note { display: flex; flex-direction: column; gap: 5px; padding: 11px 13px; border-radius: 11px; background: #fff8e6; color: #805d12; font-size: 12px; line-height: 1.45; }
 .directions {
   min-height: 46px;

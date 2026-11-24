@@ -193,3 +193,6 @@
 @media (prefers-reduced-motion: reduce) {
   .category { transition: none; }
 }
+
+/* Fonte e data de verificação (RF15) */
+.source { margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--border-default); }

@@ -2,9 +2,7 @@
 .title { font-size: 32px; font-weight: 700; color: var(--text-dark); }
 .subtitle { font-size: 14.5px; color: var(--text-gray); max-width: 640px; }
 
-.filters { padding: 58px 49px 20px; }
-
-.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 28px var(--page-x) 0; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; padding: 40px var(--page-x) 0; }
 .stat {
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
   padding: 22px 0;
@@ -13,47 +11,120 @@
 .statValue { font-size: 26px; font-weight: 700; color: var(--blue-primary); }
 .statLabel { font-size: 11px; font-weight: 700; color: var(--text-gray); text-transform: uppercase; }
 
-.grid {
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+/* ---------------------------------------------------------- Faixas de projeto
+   Lista de faixas horizontais (diferente da grade de Conteúdos):
+   barra colorida pela categoria | ícone | título e descrição | dados práticos. */
+.list {
+  display: flex; flex-direction: column; gap: 18px;
   padding: 36px var(--page-x) 64px;
-  min-height: 749px; align-content: start;
+  min-height: 600px;
 }
 .card {
-  display: flex; flex-direction: column; align-items: flex-start; gap: 12px;
-  padding: 26px;
+  /* Cor da categoria: as classes .cat-* abaixo trocam estas variáveis */
+  --accent: var(--green-accent);
+  --accent-text: #2f6f12;
+  --accent-soft: var(--bg-green-light);
+  display: grid; grid-template-columns: 56px minmax(0, 1fr) 250px; gap: 26px; align-items: start;
+  padding: 26px 28px 26px 24px;
   background: var(--base-white);
   border: var(--card-border);
+  border-left: 7px solid var(--accent);
   border-radius: var(--card-radius);
-  transition: box-shadow .15s;
+  transition: transform .2s ease, box-shadow .2s ease;
 }
-.card:hover { box-shadow: 0 8px 24px rgba(31, 41, 55, .08); }
+/* Hover: a faixa cresce um pouco e ganha sombra (desligado com "reduzir movimento") */
+.card:hover { transform: translateY(-2px) scale(1.012); box-shadow: 0 12px 28px rgba(31, 41, 55, .1); }
+.cat-prefeitura { --accent: var(--blue-primary); --accent-text: #0a5f9e; --accent-soft: var(--bg-blue-light); }
+.cat-cooperativa { --accent: var(--green-accent); --accent-text: #2f6f12; --accent-soft: var(--bg-green-light); }
+.cat-ong { --accent: var(--purple-accent); --accent-text: #6d3fd6; --accent-soft: #f1ebfe; }
+.cat-jogo { --accent: #ee8a1d; --accent-text: #9a4c08; --accent-soft: #fdf0e3; }
+.cat-outros { --accent: var(--green-accent); --accent-text: #2f6f12; --accent-soft: var(--bg-green-light); }
+
 .icon {
-  width: 46px; height: 46px; border-radius: 12px;
-  background: var(--bg-blue-light);
+  width: 56px; height: 56px; border-radius: 16px;
+  background: var(--accent-soft);
   display: flex; align-items: center; justify-content: center;
+}
+.main { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+/* Desktop: ícone e texto descem um pouco para ficar mais ao centro da faixa,
+   já que a coluna da direita costuma ser mais alta */
+.icon, .main { margin-top: 18px; }
+.cardTitle { font-size: 19px; font-weight: 700; line-height: 1.3; color: var(--text-dark); }
+.cardText { font-size: 14px; line-height: 1.65; color: var(--text-gray); max-width: 680px; overflow-wrap: break-word; }
+.cardText > * + * { margin-top: .7em; }
+.cardText strong { font-weight: 700; color: var(--text-dark); }
+.cardText ul, .cardText ol { margin: 0; padding-left: 1.3em; }
+.cardText li + li { margin-top: .25em; }
+.cardText li::marker { color: var(--accent); font-weight: 700; }
+.cardText blockquote { margin: 0; padding-left: 12px; border-left: 3px solid var(--accent); font-style: italic; }
+.cardText code { padding: 1px 5px; border-radius: 5px; background: var(--bg-light); font-size: .92em; }
+
+/* Coluna da direita: categoria, responsável, período, situação e acesso */
+.meta {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 12px;
+  padding-left: 24px;
+  border-left: 1px solid var(--border-default);
 }
 .tag {
   padding: 4px 10px; border-radius: 7px;
-  background: var(--bg-green-light); color: var(--green-accent);
-  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  background: var(--accent-soft); color: var(--accent-text);
+  font-size: 10.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
 }
-.cardTitle { font-size: 16px; font-weight: 700; color: var(--text-dark); }
-.cardText { font-size: 12.5px; color: var(--text-gray); max-width: 320px; }
-.institution { font-size: 11.5px; font-weight: 700; color: var(--text-dark); }
-.empty { grid-column: 1 / -1; font-size: 14px; color: var(--text-gray); }
-.more { display: inline-flex; align-items: center; gap: 3px; font-size: 12.5px; font-weight: 700; color: var(--blue-primary); }
-.more:hover { text-decoration: underline; }
+.facts { margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.facts dt { color: var(--text-gray); font-size: 10.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.facts dd { margin: 1px 0 0; color: var(--text-dark); font-size: 13px; font-weight: 600; line-height: 1.4; }
+
+.status { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 700; }
+.statusDot { width: 9px; height: 9px; border-radius: 50%; background: currentColor; }
+.status-embreve { color: #9a4c08; }
+.status-encerrado { color: var(--text-gray); }
+
+.more {
+  display: inline-flex; align-items: center; gap: 8px;
+  margin-top: 4px; padding: 9px 16px;
+  border-radius: 10px;
+  background: var(--accent-text); color: var(--base-white);
+  font-size: 13px; font-weight: 700;
+  transition: box-shadow .15s;
+}
+/* Clareia o botão no hover da faixa. NÃO usar `filter`/`transform` no .more: eles mudam a
+   referência do ::after absoluto, que encolhe para o tamanho do botão e o card para de
+   abrir o link. Sombra interna não tem esse efeito. */
+.cardLink:hover .more, .more:hover { box-shadow: inset 0 0 0 100px rgba(255, 255, 255, .14); }
+.empty { font-size: 14px; color: var(--text-gray); }
+
+/* Faixa com link: clicar em qualquer parte abre o link (área do botão estendida) */
+.cardLink { position: relative; cursor: pointer; }
+.cardLink .more::after { content: ''; position: absolute; inset: 0; border-radius: var(--card-radius); }
+.cardLink .more:focus-visible { outline: none; }
+.cardLink:has(.more:focus-visible) { outline: 3px solid var(--blue-primary); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  .card, .more { transition: none; }
+  .card:hover { transform: none; }
+}
 
 @media (max-width: 1100px) {
-  .grid { grid-template-columns: repeat(2, 1fr); }
   .stats { grid-template-columns: repeat(2, 1fr); }
+  /* Tablet: dados práticos descem para baixo do texto */
+  .card { grid-template-columns: 56px minmax(0, 1fr); }
+  .icon, .main { margin-top: 0; }
+  .meta {
+    grid-column: 2;
+    flex-direction: row; flex-wrap: wrap; align-items: center; gap: 10px 20px;
+    padding: 16px 0 0; border-left: 0; border-top: 1px solid var(--border-default);
+  }
+  .facts { flex-direction: row; flex-wrap: wrap; gap: 8px 20px; }
+  .more { margin-top: 0; margin-left: auto; }
 }
 @media (max-width: 700px) {
   .header { padding-top: 32px; }
   .title { font-size: 26px; }
-  .grid { grid-template-columns: 1fr; gap: 16px; padding-top: 24px; min-height: 0; }
-  .card { padding: 20px; }
-  .filters { padding: 24px var(--page-x) 8px; }
+  .list { gap: 14px; padding-top: 24px; min-height: 0; }
+  .card { grid-template-columns: minmax(0, 1fr); gap: 14px; padding: 20px 18px 20px 16px; border-left-width: 6px; }
+  .icon { width: 46px; height: 46px; border-radius: 13px; }
+  .meta { grid-column: 1; }
+  .more { margin-left: 0; }
+  .cardTitle { font-size: 17px; }
   /* Indicadores em 2 colunas: 4 cards empilhados ocupavam a tela toda */
   .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding-top: 20px; }
   .stat { padding: 16px 10px; }

@@ -51,7 +51,7 @@ def listar_conteudos(
 def detalhar_conteudo(slug: str, db: Session = Depends(get_db)):
     query = text("""
         SELECT c.id_conteudo, c.titulo, c.slug, c.resumo, c.tipo, c.imagem_url, c.publicado_em,
-               c.corpo, c.fonte_url, c.autor,
+               c.corpo, c.fonte_url, c.autor, c.verificado_em,
                COALESCE((
                    SELECT json_agg(json_build_object('id_material', m.id_material, 'nome', m.nome)
                           ORDER BY m.nome)

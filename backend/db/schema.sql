@@ -266,4 +266,4 @@ COMMIT;
 -- 3. Autorizacao por papel ('admin') deve ser validada no backend.
 -- 4. O banco nao valida CNPJ/CEP reais nem URLs validas: validar na API.
 -- 5. PostgreSQL/Neon requerem extensao PostGIS disponivel e habilitada.
--- 6. Gerencie alteracoes subsequentes com migracoes Alembic.
+-- 6. Alteracoes posteriores ficam em db/migrations/ (SQL numerado, aplicado em ordem).

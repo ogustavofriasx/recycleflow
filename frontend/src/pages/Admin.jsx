@@ -31,7 +31,6 @@ const RESOURCES = {
   'pontos-coleta': {
     label: 'Pontos de coleta',
     id: 'id_ponto',
-    preserveOnEdit: ['fonte_url'],
     fields: [
       { name: 'nome', label: 'Nome', required: true },
       { name: 'id_tipo', label: 'Tipo de ponto', kind: 'select', options: 'tipos_ponto', required: true },
@@ -53,6 +52,7 @@ const RESOURCES = {
       { name: 'horarios', label: 'Horários (dia, abertura, fechamento)', kind: 'schedule', hint: 'Uma linha por faixa. Dias: 0 domingo, 1 segunda, ... 6 sábado. Ex.: 1,08:00,17:00' },
       { name: 'materiais', label: 'Materiais aceitos', kind: 'multiSelect', options: 'materiais', hint: 'Use Ctrl ou Cmd para selecionar mais de um.' },
       { name: 'observacoes', label: 'Observações', kind: 'textarea' },
+      { name: 'fonte_url', label: 'Fonte da informação', hint: 'Endereço da página oficial ou notícia usada para conferir os dados.' },
       { name: 'verificado_em', label: 'Verificado em', kind: 'datetime' },
       { name: 'ativo', label: 'Ativo', kind: 'boolean', default: true },
     ],
@@ -60,7 +60,7 @@ const RESOURCES = {
   materiais: {
     label: 'Materiais',
     id: 'id_material',
-    preserveOnEdit: ['palavras_chave', 'fonte_url'],
+    preserveOnEdit: ['palavras_chave'],
     fields: [
       { name: 'nome', label: 'Nome', required: true },
       { name: 'id_categoria', label: 'Categoria', kind: 'select', options: 'categorias', required: true },
@@ -69,6 +69,7 @@ const RESOURCES = {
       { name: 'tipo_descarte', label: 'Tipo de descarte', kind: 'select', options: 'tipos_descarte', textValue: true, required: true },
       { name: 'instrucoes_preparo', label: 'Instruções de preparo', kind: 'textarea' },
       { name: 'cuidados', label: 'Cuidados / descarte', kind: 'textarea' },
+      { name: 'fonte_url', label: 'Fonte da informação', hint: 'Endereço da página oficial usada para conferir as orientações.' },
       { name: 'verificado_em', label: 'Verificado em', kind: 'datetime' },
       { name: 'destaque', label: 'Mostrar em "Mais comuns"', kind: 'boolean', default: false, hint: 'Aparece no primeiro filtro da página de materiais. Ideal manter entre 6 e 10.' },
       { name: 'ativo', label: 'Ativo', kind: 'boolean', default: true },
@@ -79,7 +80,7 @@ const RESOURCES = {
     id: 'id_projeto',
     fields: [
       { name: 'titulo', label: 'Título', required: true },
-      { name: 'descricao', label: 'Descrição', kind: 'textarea', required: true },
+      { name: 'descricao', label: 'Descrição', kind: 'textarea', rows: 6, required: true },
       { name: 'tipo', label: 'Tipo', hint: 'Use "jogo" para aparecer no filtro Jogos educativos.' },
       { name: 'id_instituicao', label: 'Instituição responsável', kind: 'select', options: 'instituicoes', nullable: true },
       { name: 'data_inicio', label: 'Data de início', kind: 'date' },
