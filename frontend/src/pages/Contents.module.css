@@ -100,6 +100,11 @@
 .body table { width: 100%; border-collapse: collapse; font-size: 15px; }
 .body th, .body td { padding: 10px 12px; border-bottom: 1px solid var(--border-default); text-align: left; vertical-align: top; }
 .body th { background: var(--bg-light); font-weight: 600; }
+.gameAccess { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.gameAccess p { color: var(--text-gray); font-size: 12px; }
+.gameLink { display: inline-flex; align-items: center; gap: 10px; padding: 12px 20px; border-radius: 10px; background: #0869ad; color: var(--base-white); font-size: 14px; font-weight: 700; }
+.gameLink:hover { background: #075990; }
+.gameLink:focus-visible { outline: 3px solid var(--blue-primary); outline-offset: 4px; }
 .related { display: flex; flex-direction: column; gap: 12px; padding-top: 20px; border-top: 1px solid var(--border-default); }
 .related h2 { color: var(--text-dark); font-size: 16px; }
 .materials { display: flex; flex-wrap: wrap; gap: 8px; }

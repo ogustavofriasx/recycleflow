@@ -1,4 +1,5 @@
 // Converte o projeto da API (/projetos) para o formato do card da página Projetos.
+import { isGame } from './conteudos.js';
 
 const normalize = (s) => (s ?? '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
@@ -17,10 +18,14 @@ const ICONES = {
   cooperativa: '/assets/proj-user.svg',
   ong: '/assets/proj-chat.svg',
   outros: '/assets/proj-leaf.svg',
+  jogo: '/assets/icon-game.svg',
 };
 
 export function toProject(p) {
-  const { category, tag } = categoria(p.instituicao_tipo);
+  const game = isGame(p.tipo);
+  const { category, tag } = game
+    ? { category: 'jogo', tag: 'Jogo educativo' }
+    : categoria(p.instituicao_tipo);
   return {
     id: p.id_projeto,
     title: p.titulo,
@@ -30,5 +35,6 @@ export function toProject(p) {
     icon: ICONES[category],
     institution: p.instituicao,
     link: p.fonte_url,
+    linkLabel: game ? 'Acessar jogo' : 'Saiba mais',
   };
 }

@@ -48,7 +48,7 @@ export default function Projects() {
       <section className={styles.header}>
         <h1 className={styles.title}>Projetos e Iniciativas</h1>
         <p className={styles.subtitle}>
-          Programas públicos, campanhas de conscientização e ações de cooperativas de reciclagem em Rio Claro e região.
+          Conheça iniciativas de reciclagem em Rio Claro e região e jogos educativos para aprender sobre sustentabilidade.
         </p>
       </section>
 
@@ -80,10 +80,10 @@ export default function Projects() {
             <h2 className={styles.cardTitle}>{p.title}</h2>
             <p className={styles.cardText}>{p.description}</p>
             {p.institution && <p className={styles.institution}>{p.institution}</p>}
-            {/* Sem página de detalhe ainda: "Saiba mais" leva à fonte, quando houver */}
             {p.link && (
-              <a href={p.link} className={styles.more} target="_blank" rel="noreferrer">
-                Saiba mais
+              <a href={p.link} className={styles.more} target="_blank" rel="noopener noreferrer"
+                aria-label={`${p.linkLabel}: ${p.title} (abre em nova aba)`}>
+                {p.linkLabel}
                 <img src="/assets/chevron.svg" alt="" width="13" height="13" />
               </a>
             )}

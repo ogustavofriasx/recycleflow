@@ -1,3 +1,7 @@
+// Tipos de conteúdo cadastrados no admin.
+export const isGame = (type) => ['jogo', 'jogo educativo'].includes(type?.trim().toLowerCase());
+export const contentTypeLabel = (type) => isGame(type) ? 'Jogo educativo' : type || 'Conteúdo educativo';
+
 // Capas geradas a partir dos banners do projeto (originais em /assets/covers na raiz do repo).
 // Escolhidas por funcionarem na faixa larga da capa, com o título por cima.
 // A ordem alterna os temas para conteúdos vizinhos não repetirem o mesmo visual.
