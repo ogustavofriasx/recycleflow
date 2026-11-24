@@ -63,6 +63,11 @@ export default function Contents() {
                 <p className={styles.meta}>
                   <span>{getReadingTime(content.corpo)} min de leitura</span>
                   {formatDate(content.publicado_em) && <span>{formatDate(content.publicado_em)}</span>}
+                  {content.verificado_em && (
+                    <span>
+                      Verificado em {new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short' }).format(new Date(content.verificado_em))}
+                    </span>
+                  )}
                   {content.fonte_url && !isGame(content.tipo) && (
                     <a className={styles.source} href={content.fonte_url} target="_blank" rel="noreferrer">
                       Consultar fonte ↗

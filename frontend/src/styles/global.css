@@ -39,3 +39,6 @@ img { display: block; }
 body {
   font-family: 'Poppins', sans-serif;
 }
+
+/* Aviso enquanto o JS de uma página é baixado (rotas com React.lazy) */
+.page-loading { min-height: 60vh; padding: 48px var(--page-x); color: var(--text-gray); }

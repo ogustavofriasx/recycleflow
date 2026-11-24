@@ -35,6 +35,8 @@ class Material(BaseModel):
     categoria_icone: Optional[str] = None
     categoria_cor: Optional[str] = Field(None, examples=["#7C3AED"])
     destaque: bool = Field(False, description="Aparece em \"Mais comuns\" na página de materiais")
+    fonte_url: Optional[str] = Field(None, description="Fonte da informação")
+    verificado_em: Optional[datetime] = Field(None, description="Data da última verificação")
 
 
 class PontoResumo(BaseModel):
@@ -80,6 +82,7 @@ class PontoColeta(BaseModel):
     latitude: Optional[float] = Field(None, examples=[-22.3860822])
     longitude: Optional[float] = Field(None, examples=[-47.5731666])
     telefone: Optional[str] = None
+    email_contato: Optional[str] = None
     site_url: Optional[str] = None
     horario_descricao: Optional[str] = None
     observacoes: Optional[str] = None
@@ -112,6 +115,7 @@ class Projeto(BaseModel):
     data_inicio: Optional[date] = None
     data_fim: Optional[date] = None
     fonte_url: Optional[str] = None
+    verificado_em: Optional[datetime] = None
     id_instituicao: Optional[int] = None
     instituicao: Optional[str] = Field(None, description="Nome da instituição responsável")
     instituicao_tipo: Optional[str] = Field(None, examples=["Poder público", "Cooperativa", "ONG"])
@@ -132,6 +136,7 @@ class Conteudo(ConteudoResumo):
     corpo: str = Field(description="Texto completo (Markdown)")
     fonte_url: Optional[str] = None
     autor: Optional[str] = Field(None, description="Autor da fonte principal")
+    verificado_em: Optional[datetime] = None
     materiais: list[MaterialAceito] = Field(default_factory=list, description="Materiais relacionados")
 
 

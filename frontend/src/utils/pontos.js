@@ -7,7 +7,8 @@ const ORDEM = [1, 2, 3, 4, 5, 6, 0];
 const slug = (s) =>
   s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
-// "Seg a Sex 07:00–18:00 · Sáb 07:00–17:00 · Dom 07:00–12:00"
+// Uma linha por grupo de dias com o mesmo horário:
+// ["Seg a Sex: 07:00–18:00", "Sáb: 07:00–17:00", "Dom: 07:00–12:00"]
 export function formatarHorarios(horarios) {
   if (!horarios?.length) return null;
   const porDia = new Map();
@@ -27,9 +28,7 @@ export function formatarHorarios(horarios) {
     else grupos.push({ inicio: dia, fim: dia, faixa });
   });
 
-  return grupos
-    .map((g) => `${DIAS[g.inicio]}${g.inicio !== g.fim ? ` a ${DIAS[g.fim]}` : ''} ${g.faixa}`)
-    .join(' · ');
+  return grupos.map((g) => `${DIAS[g.inicio]}${g.inicio !== g.fim ? ` a ${DIAS[g.fim]}` : ''}: ${g.faixa}`);
 }
 
 // 850 -> "850 m"; 2340 -> "2,3 km"
@@ -37,6 +36,15 @@ export function formatarDistancia(metros) {
   if (metros == null) return '';
   if (metros < 1000) return `${Math.round(metros / 10) * 10} m`;
   return `${(metros / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 1 })} km`;
+}
+
+// Distância em linha reta (fórmula de haversine), em metros. a e b: [lat, lng]
+export function distanciaEmMetros(a, b) {
+  const rad = (g) => (g * Math.PI) / 180;
+  const dLat = rad(b[0] - a[0]);
+  const dLng = rad(b[1] - a[1]);
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a[0])) * Math.cos(rad(b[0])) * Math.sin(dLng / 2) ** 2;
+  return 2 * 6371000 * Math.asin(Math.sqrt(h));
 }
 
 export function toPoint(p) {
@@ -51,11 +59,14 @@ export function toPoint(p) {
     fullAddress: [rua, p.complemento, p.bairro].filter(Boolean).join(' - '),
     bairro: p.bairro,
     distance: formatarDistancia(p.distancia_m), // só vem quando a consulta tem lat/lng
-    hours: formatarHorarios(p.horarios) ?? p.horario_descricao ?? 'Não informado',
+    hours: formatarHorarios(p.horarios) ?? [p.horario_descricao ?? 'Não informado'],
     hoursNote: p.horario_descricao,
     materialsLabel: p.materiais.length ? p.materiais.map((m) => m.nome).join(', ') : 'Não informado',
     materialIds: p.materiais.map((m) => m.id_material),
     position: temCoordenada ? [p.latitude, p.longitude] : null,
+    phone: p.telefone,
+    notes: p.observacoes,
+    verifiedAt: p.verificado_em,
     isDemo: p.nome.startsWith('[DEMO]'),
   };
 }

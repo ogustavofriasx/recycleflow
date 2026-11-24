@@ -3,7 +3,7 @@ import { isGame } from './conteudos.js';
 
 const normalize = (s) => (s ?? '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
-// Categoria (usada pelos chips de data/projects.js) a partir do tipo da instituição
+// Categoria (define a cor e a tag da faixa) a partir do tipo da instituição
 function categoria(tipoInstituicao) {
   const t = normalize(tipoInstituicao);
   if (t.includes('poder publico') || t.includes('prefeitura')) return { category: 'prefeitura', tag: 'Prefeitura' };
@@ -21,6 +21,33 @@ const ICONES = {
   jogo: '/assets/icon-game.svg',
 };
 
+// "2026-03-01" -> "01/03/2026" (sem passar por Date, que mudaria o dia por causa do fuso)
+const dataBR = (iso) => (iso ? iso.split('-').reverse().join('/') : null);
+
+// Período de realização: "01/03/2026 a 30/06/2026", "Desde 01/03/2026" ou "Até 30/06/2026"
+export function formatarPeriodo(inicio, fim) {
+  const [i, f] = [dataBR(inicio), dataBR(fim)];
+  if (i && f) return `${i} a ${f}`;
+  if (i) return `Desde ${i}`;
+  if (f) return `Até ${f}`;
+  return null;
+}
+
+// Data de hoje no fuso do navegador, no mesmo formato da API ("2026-11-24")
+function hojeISO() {
+  const d = new Date();
+  return [d.getFullYear(), d.getMonth() + 1, d.getDate()].map((n) => String(n).padStart(2, '0')).join('-');
+}
+
+// Selo só para o que foge do normal: projeto que ainda vai começar ou que já terminou.
+// Projetos em andamento ou sem datas não levam selo (status null).
+// Strings ISO ("2026-11-24") comparam certo em ordem alfabética.
+export function situacao(inicio, fim, hoje = hojeISO()) {
+  if (inicio && inicio > hoje) return { status: 'embreve', label: 'Em breve' };
+  if (fim && fim < hoje) return { status: 'encerrado', label: 'Encerrado' };
+  return { status: null, label: null };
+}
+
 export function toProject(p) {
   const game = isGame(p.tipo);
   const { category, tag } = game
@@ -35,6 +62,9 @@ export function toProject(p) {
     icon: ICONES[category],
     institution: p.instituicao,
     link: p.fonte_url,
+    period: formatarPeriodo(p.data_inicio, p.data_fim),
+    ...situacao(p.data_inicio, p.data_fim),
+    verifiedAt: p.verificado_em,
     linkLabel: game ? 'Acessar jogo' : 'Saiba mais',
   };
 }

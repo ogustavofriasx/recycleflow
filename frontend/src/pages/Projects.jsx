@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
-import ChipGroup from '../components/ChipGroup.jsx';
-import { fixedStats, projectFilters } from '../data/projects.js';
-import { listarPontosColeta, listarProjetos } from '../services/api.js';
+import ArticleBody from '../components/ArticleBody.jsx';
+import SourceInfo from '../components/SourceInfo.jsx';
+import { buscarMateriais, listarPontosColeta, listarProjetos } from '../services/api.js';
 import { toProject } from '../utils/projetos.js';
 import styles from './Projects.module.css';
 
 export default function Projects() {
-  const [filter, setFilter] = useState('todos');
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [counts, setCounts] = useState(null); // { Ecoponto: 6, Cooperativa: 1 }
+  const [counts, setCounts] = useState(null); // { Ecoponto: 9, Cooperativa: 3, ... }
+  const [materialCount, setMaterialCount] = useState(null);
 
   // Projetos publicados vêm da API
   useEffect(() => {
@@ -29,19 +29,20 @@ export default function Projects() {
         setCounts(porTipo);
       })
       .catch(() => {}); // sem API, os indicadores ficam com "–"
+    buscarMateriais(undefined, ctrl.signal)
+      .then((lista) => setMaterialCount(lista.length))
+      .catch(() => {});
     return () => ctrl.abort();
   }, []);
 
   const contagem = (tipo) => (counts ? String(counts[tipo] ?? 0) : '–');
+  // Todos os indicadores são contados a partir do banco (nada de número fixo sem fonte)
   const stats = [
     { value: contagem('Ecoponto'), label: 'Ecopontos ativos' },
-    fixedStats.recuperacao,
     { value: contagem('Cooperativa'), label: 'Cooperativas parceiras' },
-    fixedStats.habitantes,
+    { value: contagem('Logística reversa'), label: 'Pontos de logística reversa' },
+    { value: materialCount == null ? '–' : String(materialCount), label: 'Materiais com orientação' },
   ];
-
-  // "Todos" mostra tudo; os outros filtros olham a categoria de cada projeto
-  const visible = filter === 'todos' ? projects : projects.filter((p) => p.category === filter);
 
   return (
     <>
@@ -50,10 +51,6 @@ export default function Projects() {
         <p className={styles.subtitle}>
           Conheça iniciativas de reciclagem em Rio Claro e região e jogos educativos para aprender sobre sustentabilidade.
         </p>
-      </section>
-
-      <section className={styles.filters}>
-        <ChipGroup options={projectFilters} value={filter} onChange={setFilter} label="Filtrar projetos" />
       </section>
 
       <section className={styles.stats}>
@@ -65,28 +62,58 @@ export default function Projects() {
         ))}
       </section>
 
-      <section className={styles.grid}>
-        {(loading || error || !visible.length) && (
+      <section className={styles.list}>
+        {(loading || error || !projects.length) && (
           <p className={styles.empty}>
-            {loading ? 'Carregando projetos...' : error ?? 'Nenhum projeto nesta categoria ainda.'}
+            {loading ? 'Carregando projetos...' : error ?? 'Nenhum projeto publicado ainda.'}
           </p>
         )}
-        {visible.map((p) => (
-          <article key={p.id} className={styles.card}>
+        {projects.map((p) => (
+          // Faixa horizontal: barra colorida pela categoria | ícone | texto | dados práticos.
+          // Com link, a faixa inteira é clicável (o botão cobre o card via ::after).
+          <article
+            key={p.id}
+            className={[styles.card, styles[`cat-${p.category}`], p.link && styles.cardLink].filter(Boolean).join(' ')}
+          >
             <span className={styles.icon}>
-              <img src={p.icon} alt="" width="23" height="23" />
+              <img src={p.icon} alt="" width="26" height="26" />
             </span>
-            <span className={styles.tag}>{p.tag}</span>
-            <h2 className={styles.cardTitle}>{p.title}</h2>
-            <p className={styles.cardText}>{p.description}</p>
-            {p.institution && <p className={styles.institution}>{p.institution}</p>}
-            {p.link && (
-              <a href={p.link} className={styles.more} target="_blank" rel="noopener noreferrer"
-                aria-label={`${p.linkLabel}: ${p.title} (abre em nova aba)`}>
-                {p.linkLabel}
-                <img src="/assets/chevron.svg" alt="" width="13" height="13" />
-              </a>
-            )}
+            <div className={styles.main}>
+              <h2 className={styles.cardTitle}>{p.title}</h2>
+              {/* Descrição aceita Markdown (negrito, itálico, listas, quebras de linha) */}
+              <ArticleBody className={styles.cardText} text={p.description} compact />
+            </div>
+            <div className={styles.meta}>
+              <span className={styles.tag}>{p.tag}</span>
+              <dl className={styles.facts}>
+                {p.institution && (
+                  <div>
+                    <dt>Responsável</dt>
+                    <dd>{p.institution}</dd>
+                  </div>
+                )}
+                {p.period && (
+                  <div>
+                    <dt>Período</dt>
+                    <dd>{p.period}</dd>
+                  </div>
+                )}
+              </dl>
+              {p.status && (
+                <span className={`${styles.status} ${styles[`status-${p.status}`]}`}>
+                  <span className={styles.statusDot} aria-hidden="true" />
+                  {p.label}
+                </span>
+              )}
+              <SourceInfo verifiedAt={p.verifiedAt} />
+              {p.link && (
+                <a href={p.link} className={styles.more} target="_blank" rel="noopener noreferrer"
+                  aria-label={`${p.linkLabel}: ${p.title} (abre em nova aba)`}>
+                  {p.linkLabel}
+                  <span aria-hidden="true">→</span>
+                </a>
+              )}
+            </div>
           </article>
         ))}
       </section>

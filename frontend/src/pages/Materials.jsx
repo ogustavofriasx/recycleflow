@@ -4,7 +4,10 @@ import ChipGroup from '../components/ChipGroup.jsx';
 import GameBanner from '../components/GameBanner.jsx';
 import MaterialSearch from '../components/MaterialSearch.jsx';
 import PointItem from '../components/PointItem.jsx';
+import SourceInfo from '../components/SourceInfo.jsx';
+import useUserLocation from '../hooks/useUserLocation.js';
 import { buscarMateriais, obterMaterial } from '../services/api.js';
+import { distanciaEmMetros, formatarDistancia } from '../utils/pontos.js';
 import styles from './Materials.module.css';
 
 // Ícone do card: primeiro o do material, depois o da categoria (campo `icone` de
@@ -44,13 +47,20 @@ function groupByCategory(materials) {
 
 const toChips = (materials) => materials.map((m) => ({ value: m.id_material, label: m.nome }));
 
-// Converte um ponto da API para o formato que o PointItem espera
-const toPointItem = (p) => ({
-  id: p.id_ponto,
-  name: p.nome,
-  address: [[p.logradouro, p.numero].filter(Boolean).join(', '), p.bairro].filter(Boolean).join(' - '),
-  distance: '', // distância entra na etapa 7 (pontos próximos ao usuário)
-});
+// Converte um ponto da API para o formato que o PointItem espera. Se o usuário já
+// informou o local (Home ou Mapa), calcula a distância em linha reta até o ponto.
+const toPointItem = (p, userPosition) => {
+  const metros = userPosition && p.latitude != null && p.longitude != null
+    ? distanciaEmMetros(userPosition, [p.latitude, p.longitude])
+    : null;
+  return {
+    id: p.id_ponto,
+    name: p.nome,
+    address: [[p.logradouro, p.numero].filter(Boolean).join(', '), p.bairro].filter(Boolean).join(' - '),
+    metros,
+    distance: formatarDistancia(metros),
+  };
+};
 
 export default function Materials() {
   const [allMaterials, setAllMaterials] = useState([]);
@@ -59,6 +69,7 @@ export default function Materials() {
   const [material, setMaterial] = useState(null); // detalhe + pontos
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { position: userPosition } = useUserLocation();
 
   // 1) Carrega a lista para os filtros e seleciona Pilha (igual ao protótipo) ou o primeiro
   useEffect(() => {
@@ -113,7 +124,11 @@ export default function Materials() {
     if (!isCommon && category !== ALL) setCategory(m.id_categoria);
   };
 
-  const acceptingPoints = material?.pontos?.map(toPointItem) ?? [];
+  // Com local do usuário, do mais próximo para o mais distante
+  const acceptingPoints = useMemo(() => {
+    const lista = material?.pontos?.map((p) => toPointItem(p, userPosition)) ?? [];
+    return userPosition ? lista.sort((a, b) => (a.metros ?? Infinity) - (b.metros ?? Infinity)) : lista;
+  }, [material, userPosition]);
   const icon = material && (
     MATERIAL_ICONS[material.nome.toLocaleLowerCase('pt-BR')] ??
     CATEGORY_ICONS[material.categoria_icone] ??
@@ -227,6 +242,7 @@ export default function Materials() {
                 <InfoRow label="Categoria" value={material.categoria} />
                 <InfoRow label="Por quê?" value={material.descricao} />
               </dl>
+              <SourceInfo url={material.fonte_url} verifiedAt={material.verificado_em} className={styles.source} />
             </article>
 
             <aside className={styles.side}>

@@ -13,6 +13,9 @@ import styles from './MapPage.module.css';
 
 const normalize = (s) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 const byName = (a, b) => a.localeCompare(b, 'pt-BR');
+// "Ecoponto" -> "Ecopontos", "Cooperativa" -> "Cooperativas"; nomes compostos ficam como estão
+// ("Logística reversa" viraria "Logística reversas").
+const plural = (t) => (/\s/.test(t) || t.endsWith('s') ? t : `${t}s`);
 
 export default function MapPage() {
   // Filtros de material, bairro e tipo ficam na URL: /mapa?material=7&bairro=Cervezão&tipo=Ecoponto
@@ -69,7 +72,7 @@ export default function MapPage() {
 
   const typeOptions = useMemo(() => {
     const tipos = [...new Set(allPoints.map((p) => p.typeLabel))].sort(byName);
-    return [{ value: '', label: 'Todos' }, ...tipos.map((t) => ({ value: t, label: `${t}s` }))];
+    return [{ value: '', label: 'Todos' }, ...tipos.map((t) => ({ value: t, label: plural(t) }))];
   }, [allPoints]);
   const bairros = useMemo(
     () => [...new Set(allPoints.map((p) => p.bairro).filter(Boolean))].sort(byName),

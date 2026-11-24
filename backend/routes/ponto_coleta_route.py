@@ -17,7 +17,7 @@ QUERY_PONTOS = """
         p.logradouro, p.numero, p.complemento, p.bairro, p.cidade, p.estado, p.cep,
         ST_Y(p.localizacao::geometry) AS latitude,
         ST_X(p.localizacao::geometry) AS longitude,
-        p.telefone, p.site_url, p.horario_descricao, p.observacoes, p.fonte_url, p.verificado_em,
+        p.telefone, p.email_contato, p.site_url, p.horario_descricao, p.observacoes, p.fonte_url, p.verificado_em,
         {distancia} AS distancia_m,
         COALESCE((
             SELECT json_agg(json_build_object(

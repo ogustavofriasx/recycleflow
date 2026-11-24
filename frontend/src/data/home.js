@@ -10,7 +10,7 @@ export const quickAccess = [
     text: 'Veja no mapa os ecopontos e cooperativas mais próximos de você.',
   },
   {
-    to: '/projetos', color: 'var(--purple-accent)', icon: '/assets/icon-chat-white.svg',
+    to: '/conteudos', color: 'var(--purple-accent)', icon: '/assets/icon-chat-white.svg',
     title: 'Aprender a reciclar',
     text: 'Dicas, curiosidades e projetos de reciclagem em Rio Claro e região.',
   },

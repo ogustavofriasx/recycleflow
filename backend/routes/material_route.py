@@ -14,6 +14,7 @@ router = APIRouter(prefix="/materiais", tags=["Materiais"])
 CAMPOS_MATERIAL = """
     m.id_material, m.nome, m.descricao, m.reciclavel, m.tipo_descarte,
     m.instrucoes_preparo, m.cuidados, m.palavras_chave, m.destaque,
+    m.fonte_url, m.verificado_em,
     m.id_categoria, c.nome AS categoria, c.icone AS categoria_icone, c.cor_hex AS categoria_cor
 """
 
