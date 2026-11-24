@@ -68,3 +68,26 @@ export function toProject(p) {
     linkLabel: game ? 'Acessar jogo' : 'Saiba mais',
   };
 }
+
+// Jogo da separação do próprio RecycleFlow (rota /jogo). Não vem do banco: é uma
+// funcionalidade da plataforma, divulgada como primeira faixa da aba Projetos.
+export const JOGO_RECYCLEFLOW = {
+  id: 'jogo-recycleflow',
+  title: 'Jogo da separação',
+  // Markdown, como as descrições vindas do admin
+  description: `Arraste cada material para a **lixeira certa** e descubra para onde vai cada resíduo.
+
+- Lixeiras nas cores da coleta seletiva e o ecoponto
+- Dica de descarte a cada jogada
+- Pontuação e sequência de acertos`,
+  category: 'jogo',
+  tag: 'Jogo educativo',
+  icon: '/assets/icon-game.svg',
+  institution: 'RecycleFlow',
+  to: '/jogo', // link interno: abre na mesma aba
+  linkLabel: 'Jogar agora',
+  period: null,
+  status: null,
+  label: null,
+  verifiedAt: null,
+};

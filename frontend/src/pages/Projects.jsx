@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import ArticleBody from '../components/ArticleBody.jsx';
 import SourceInfo from '../components/SourceInfo.jsx';
 import { buscarMateriais, listarPontosColeta, listarProjetos } from '../services/api.js';
-import { toProject } from '../utils/projetos.js';
+import { JOGO_RECYCLEFLOW, toProject } from '../utils/projetos.js';
 import styles from './Projects.module.css';
 
 export default function Projects() {
@@ -63,17 +64,13 @@ export default function Projects() {
       </section>
 
       <section className={styles.list}>
-        {(loading || error || !projects.length) && (
-          <p className={styles.empty}>
-            {loading ? 'Carregando projetos...' : error ?? 'Nenhum projeto publicado ainda.'}
-          </p>
-        )}
-        {projects.map((p) => (
+        {/* O jogo do RecycleFlow vem sempre primeiro; os demais vêm da API */}
+        {[JOGO_RECYCLEFLOW, ...projects].map((p) => (
           // Faixa horizontal: barra colorida pela categoria | ícone | texto | dados práticos.
           // Com link, a faixa inteira é clicável (o botão cobre o card via ::after).
           <article
             key={p.id}
-            className={[styles.card, styles[`cat-${p.category}`], p.link && styles.cardLink].filter(Boolean).join(' ')}
+            className={[styles.card, styles[`cat-${p.category}`], (p.link || p.to) && styles.cardLink].filter(Boolean).join(' ')}
           >
             <span className={styles.icon}>
               <img src={p.icon} alt="" width="26" height="26" />
@@ -106,7 +103,12 @@ export default function Projects() {
                 </span>
               )}
               <SourceInfo verifiedAt={p.verifiedAt} />
-              {p.link && (
+              {p.to ? (
+                <Link to={p.to} className={styles.more} aria-label={`${p.linkLabel}: ${p.title}`}>
+                  {p.linkLabel}
+                  <span aria-hidden="true">→</span>
+                </Link>
+              ) : p.link && (
                 <a href={p.link} className={styles.more} target="_blank" rel="noopener noreferrer"
                   aria-label={`${p.linkLabel}: ${p.title} (abre em nova aba)`}>
                   {p.linkLabel}
@@ -116,6 +118,9 @@ export default function Projects() {
             </div>
           </article>
         ))}
+        {(loading || error) && (
+          <p className={styles.empty}>{loading ? 'Carregando projetos...' : error}</p>
+        )}
       </section>
     </>
   );
