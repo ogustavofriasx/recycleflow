@@ -72,11 +72,6 @@ Marcus Vinicius de Oliveira Silva.
 
 **Orientador:** Prof. Leonardo Tortoro Pereira.
 
-## Para desenvolvedores
-
-As instruções para rodar o projeto, publicá-lo e administrar a plataforma estão em
-[docs/DESENVOLVIMENTO.md](docs/DESENVOLVIMENTO.md).
-
 ## Licença
 
 O código do RecycleFlow está sob a [licença MIT](LICENSE).
