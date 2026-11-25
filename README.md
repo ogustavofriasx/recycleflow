@@ -1,164 +1,81 @@
 <div align="center">
   <img src="assets/recycleflow-logo.png" alt="Logo do RecycleFlow" width="280" />
 
-  Sistema de apoio à Reciclagem Urbana
+  **Sistema de apoio à Reciclagem Urbana**
+
+  Rio Claro (SP) e região
 </div>
 
+O **RecycleFlow** é uma plataforma web que reúne, em um só lugar, as informações de que uma
+pessoa precisa para descartar um resíduo do jeito certo: se o material é reciclável, como
+prepará-lo antes do descarte e onde entregá-lo em Rio Claro e região.
 
-O RecycleFlow é uma plataforma em desenvolvimento para centralizar informações sobre reciclagem e descarte correto de resíduos em Rio Claro (SP) e região. Seu objetivo é ajudar as pessoas a identificar como preparar materiais para o descarte e onde encontrar pontos de coleta adequados.
+## Por que o projeto existe
 
-Status:
-Projeto acadêmico em fase final: busca de materiais, mapa de pontos de coleta com pontos próximos,
-projetos e iniciativas, conteúdos educativos, jogo de separação e painel administrativo implementados.
+A ideia surgiu de uma dificuldade real do grupo ao tentar descartar um material que não podia ir
+para o lixo comum. As orientações sobre reciclagem, os endereços e horários dos ecopontos e o que
+cada local aceita estavam espalhados entre páginas da prefeitura, notícias e documentos. Rio Claro
+já tem coleta seletiva, ecopontos, cooperativas e pontos de logística reversa, mas encontrar a
+informação certa na hora de descartar ainda dá trabalho.
 
-## Como rodar o projeto
+O RecycleFlow não substitui esses serviços: ele organiza as informações e aproxima os serviços da
+população.
 
-O projeto tem duas partes que rodam ao mesmo tempo, cada uma em um terminal: o backend (FastAPI,
-servido pelo uvicorn na porta 8000) e o frontend (React com Vite). Os comandos abaixo partem da
-raiz do repositório e usam o PowerShell no Windows.
+## O que a plataforma oferece
 
-Pré-requisitos: Python 3 e Node.js (com npm) instalados.
+- **Busca de materiais:** o usuário pesquisa um resíduo (pilha, óleo de cozinha, vidro,
+  medicamento...) e vê se ele é reciclável, como prepará-lo, por que descartá-lo corretamente e
+  quais pontos de coleta o recebem. A busca ignora acentos e entende sinônimos, como "bateria"
+  para "Pilhas e baterias".
+- **Mapa de pontos de coleta:** ecopontos, cooperativas e pontos de logística reversa em um mapa
+  interativo, com filtros por material, bairro e tipo de ponto. Com a localização do usuário, ou
+  com um local escolhido no mapa, os pontos aparecem do mais próximo ao mais distante. Cada ponto
+  mostra endereço, horários, materiais aceitos, telefone e um atalho para traçar a rota.
+- **Projetos e iniciativas:** campanhas, programas públicos e ações de cooperativas, ONGs e
+  empresas da região, cada um com o responsável, o período e o link para a fonte oficial.
+- **Conteúdos educativos:** artigos, dicas e curiosidades sobre reciclagem e descarte correto.
+- **Jogo da separação:** um jogo em que o jogador arrasta cada material até a lixeira certa, nas
+  cores da coleta seletiva, ou até o ecoponto, recebendo uma dica de descarte a cada jogada.
+- **Painel administrativo:** área restrita em que a equipe mantém atualizados os pontos de coleta,
+  materiais, projetos e conteúdos, sem precisar mexer no código.
 
-### 1. Variáveis de ambiente
+Sempre que possível, as informações exibidas trazem a fonte e a data da última verificação.
 
-Crie um arquivo `.env` na raiz do repositório (ele não é versionado) com:
+## Objetivos de Desenvolvimento Sustentável
 
-```env
-URL=<string de conexão do banco Neon>
-ADMIN_TOKEN_SECRET=<segredo com pelo menos 32 caracteres>
-```
+O projeto se relaciona a três Objetivos de Desenvolvimento Sustentável da ONU:
 
-O backend carrega esse arquivo automaticamente. Veja a seção [Área administrativa](#área-administrativa)
-para gerar o `ADMIN_TOKEN_SECRET`.
+- **ODS 9 – Indústria, inovação e infraestrutura:** usa a tecnologia para integrar informações
+  sobre pontos de coleta, cooperativas e estabelecimentos que recebem materiais recicláveis.
+- **ODS 11 – Cidades e comunidades sustentáveis:** torna a gestão de resíduos mais acessível e
+  organizada no espaço urbano.
+- **ODS 12 – Consumo e produção responsáveis:** incentiva a reciclagem, o descarte adequado e a
+  conscientização sobre o consumo.
 
-### 2. Backend
+## Tecnologias
 
-Na primeira vez, crie o ambiente virtual e instale as dependências:
-
-```powershell
-python -m venv venv
-.\venv\Scripts\Activate.ps1
-pip install -r backend/requirements.txt
-```
-
-Nas próximas vezes, basta ativar o ambiente virtual e subir a API:
-
-```powershell
-.\venv\Scripts\Activate.ps1
-cd backend
-uvicorn main:app --reload
-```
-
-A API fica em `http://localhost:8000` e a documentação interativa em `http://localhost:8000/docs`.
-
-> Se o PowerShell bloquear a ativação do ambiente, rode uma vez
-> `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`. No Linux/macOS, ative com
-> `source venv/bin/activate`.
-
-### 3. Frontend
-
-Em outro terminal:
-
-```powershell
-cd frontend
-npm install   # só na primeira vez ou quando as dependências mudarem
-npm run dev
-```
-
-Abra o endereço mostrado pelo Vite (normalmente `http://localhost:5173`). Em desenvolvimento, as
-chamadas para `/api` são redirecionadas pelo Vite para o backend em `localhost:8000`, então o
-backend precisa estar rodando para as páginas carregarem os dados.
-
-## Deploy
-
-A publicação usa três serviços, todos com plano gratuito:
-
-| Parte | Serviço | Configuração |
-|---|---|---|
-| Frontend (React) | Vercel | `frontend/vercel.json` |
-| API (FastAPI) | Render | `render.yaml` |
-| Banco (PostgreSQL + PostGIS) | Neon | já em uso |
-
-O frontend continua chamando `/api/...`, como em desenvolvimento. No Vercel, a regra de
-`frontend/vercel.json` repassa essas chamadas para a API no Render, então o navegador vê um
-único endereço e não é preciso configurar CORS. A segunda regra devolve o `index.html` para
-qualquer outra rota, para que links diretos como `/mapa` ou `/admin` funcionem.
-
-Os dois serviços publicam sozinhos a cada push na branch `main`.
-
-### API no Render
-
-1. Em [render.com](https://render.com), entre com o GitHub e escolha **New → Blueprint**.
-2. Selecione este repositório. O Render lê o `render.yaml` e cria o serviço `recycleflow-api`.
-3. Quando pedir a variável `URL`, cole a string de conexão do Neon (use a versão *pooled*).
-   O `ADMIN_TOKEN_SECRET` é gerado automaticamente.
-4. Ao terminar, confira `https://<seu-servico>.onrender.com/docs`.
-
-No plano gratuito, a API "dorme" após cerca de 15 minutos sem acesso e o primeiro acesso
-seguinte demora de 30 a 50 segundos. Antes de uma apresentação, abra o site alguns minutos antes.
-
-### Frontend no Vercel
-
-1. Em [vercel.com](https://vercel.com), entre com o GitHub e escolha **Add New → Project**.
-2. Selecione este repositório e, em **Root Directory**, escolha `frontend`.
-   O restante (Vite, `npm run build`, pasta `dist`) vem do `vercel.json`.
-3. Se o endereço do Render não for exatamente `https://recycleflow-api.onrender.com`, ajuste o
-   destino da regra `/api/(.*)` em `frontend/vercel.json` e faça push.
-
-O Vercel cria uma prévia para cada pull request. As prévias usam a mesma API e o mesmo banco
-de produção: cuidado ao testar o painel administrativo nelas.
-
-## Jogo de separação
-
-O jogo fica em `/jogo` e ensina, de forma lúdica, para onde vai cada tipo de resíduo. O jogador
-arrasta um material de cada vez até o destino correto:
-
-| Destino | Material |
+| Camada | Tecnologias |
 |---|---|
-| Lixeira azul | Papel |
-| Lixeira vermelha | Plástico |
-| Lixeira verde | Vidro |
-| Lixeira amarela | Metal |
-| Lixeira marrom | Orgânico |
-| Ecoponto | Resíduos que não vão para a coleta seletiva comum (ex.: bitucas de cigarro) |
+| Frontend | React, Vite, React Router, Leaflet com mapas do OpenStreetMap |
+| Backend | Python, FastAPI, Pydantic, SQLAlchemy |
+| Banco de dados | PostgreSQL com PostGIS (consultas de distância), hospedado no Neon |
+| Publicação | Vercel (frontend) e Render (API) |
 
-Cada acerto aumenta sua sequência e, certo ou errado, o jogo mostra uma dica de descarte sobre o material.
-Caso o jogador erre, a sequência vai à 0, porém o jogo continua.
-Quando o destino correto é o Ecoponto, aparece um atalho para o mapa de pontos de coleta. Ao final,
-o jogador vê a pontuação e pode jogar de novo ou ir direto ao mapa.
+## Contexto acadêmico
 
-O jogo funciona só no frontend, sem chamadas à API. Os materiais, destinos e dicas ficam em
-`frontend/src/data/game.js` e as imagens em `frontend/public/assets/game/`; para incluir um novo
-material, basta acrescentar um item à lista `MATERIAIS` com a imagem correspondente.
+Projeto desenvolvido nas disciplinas Projetos em Computação I e II do curso de Bacharelado em
+Ciências da Computação da **Unesp – Câmpus de Rio Claro** (Instituto de Geociências e Ciências
+Exatas, Departamento de Estatística, Matemática Aplicada e Computação), em 2026.
 
-O acesso é feito pelo card do jogo na Home, pelas chamadas nas páginas de Materiais e Conteúdos
-(componente `GameBanner`) e pelo link "Jogo da separação" no rodapé.
+**Equipe:** Arnaldo Martins de Godoy, Gustavo Gomes da Cruz, Gustavo Varjão de Frias e
+Marcus Vinicius de Oliveira Silva.
 
-## Área administrativa
+**Orientador:** Prof. Leonardo Tortoro Pereira.
 
-O painel fica em `/admin`. As operações de criação, edição e remoção são protegidas no backend:
-instituições, pontos de coleta e materiais são desativados logicamente; projetos e conteúdos
-educativos podem ser excluídos. Projetos e artigos/dicas só aparecem nas rotas públicas quando
-marcados como publicados.
+## Para desenvolvedores
 
-Configure `ADMIN_TOKEN_SECRET` no ambiente do backend com pelo menos 32 caracteres aleatórios.
-Por exemplo, gere um valor com `python -c "import secrets; print(secrets.token_urlsafe(48))"`.
-Não reutilize nem publique esse segredo.
-
-Não há cadastro público de administradores. Para criar a primeira conta, configure a variável
-`URL` do banco Neon como já é feito para a API e execute no diretório `backend`:
-
-```powershell
-python -m scripts.create_admin
-```
-
-O comando solicita nome, e-mail e senha de forma interativa e grava apenas o hash Argon2id da senha.
-Cada requisição administrativa verifica novamente se a conta continua ativa e com papel `admin`,
-de modo que o acesso possa ser revogado alterando `usuario.papel` ou `usuario.ativo` no banco.
-
-Os endpoints de administração ficam sob `/admin`. Os registros públicos existentes usam as tabelas
-do schema atual; aplique `backend/db/schema.sql` e as migrações já existentes antes de ativar o
-painel em um banco ainda não preparado.
+As instruções para rodar o projeto, publicá-lo e administrar a plataforma estão em
+[docs/DESENVOLVIMENTO.md](docs/DESENVOLVIMENTO.md).
 
 ## Licença
 
