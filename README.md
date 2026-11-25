@@ -4,7 +4,12 @@
   **Sistema de apoio à Reciclagem Urbana**
 
   Rio Claro (SP) e região
+
+  **[Acessar a plataforma](https://recycleflow-rc.vercel.app)** · [Documentação da API](https://recycleflow-api.onrender.com/docs)
 </div>
+
+> A API roda no plano gratuito do Render e "dorme" depois de alguns minutos sem uso: o primeiro
+> acesso pode levar até um minuto para carregar os dados.
 
 O **RecycleFlow** é uma plataforma web que reúne, em um só lugar, as informações de que uma
 pessoa precisa para descartar um resíduo do jeito certo: se o material é reciclável, como

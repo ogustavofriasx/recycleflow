@@ -65,11 +65,11 @@ backend precisa estar rodando para as páginas carregarem os dados.
 
 A publicação usa três serviços, todos com plano gratuito:
 
-| Parte | Serviço | Configuração |
-|---|---|---|
-| Frontend (React) | Vercel | `frontend/vercel.json` |
-| API (FastAPI) | Render | `render.yaml` |
-| Banco (PostgreSQL + PostGIS) | Neon | já em uso |
+| Parte | Serviço | Configuração | Endereço |
+|---|---|---|---|
+| Frontend (React) | Vercel | `frontend/vercel.json` | https://recycleflow-rc.vercel.app |
+| API (FastAPI) | Render | `render.yaml` | https://recycleflow-api.onrender.com ([/docs](https://recycleflow-api.onrender.com/docs)) |
+| Banco (PostgreSQL + PostGIS) | Neon | variável `URL` no Render | — |
 
 O frontend continua chamando `/api/...`, como em desenvolvimento. No Vercel, a regra de
 `frontend/vercel.json` repassa essas chamadas para a API no Render, então o navegador vê um
