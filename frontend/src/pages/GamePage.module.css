@@ -63,9 +63,13 @@
   border-radius: 16px;
   padding: 1.5rem;
   margin-bottom: 2.5rem;
+  /* Acima das lixeiras: o item arrastado passa por cima delas */
+  position: relative;
+  z-index: 2;
 }
 
 .itemArrastavel {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -73,7 +77,19 @@
   cursor: grab;
   transition: transform 0.2s ease;
   user-select: none;
+  -webkit-user-select: none;
+  /* Sem isso o celular rola a página em vez de arrastar o item */
+  touch-action: none;
 }
+/* Durante o arrasto o item segue o dedo/mouse sem atraso */
+.arrastando {
+  z-index: 1;
+  cursor: grabbing;
+  transition: none;
+  filter: drop-shadow(0 12px 18px rgba(15, 42, 61, .25));
+}
+/* Com a dica aberta, o item não pode ser arrastado */
+.itemBloqueado { cursor: default; opacity: .75; }
 
 .itemArrastavel img {
   display: block;
@@ -115,6 +131,10 @@
 }
 
 .destinoCard {
+  width: 100%;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
   background: rgba(255, 255, 255, .92);
   box-shadow: 0 6px 18px rgba(15, 42, 61, .06);
   border: var(--card-border);
@@ -126,10 +146,21 @@
   align-items: center;
 }
 
-.destinoCard:hover {
-  border-color: var(--green-accent);
-  transform: translateY(-4px);
+/* Hover só em aparelhos com mouse (no celular o hover "gruda" depois do toque) */
+@media (hover: hover) {
+  .destinoCard:hover:not(:disabled) {
+    border-color: var(--green-accent);
+    transform: translateY(-4px);
+  }
 }
+/* Lixeira sob o item que está sendo arrastado */
+.destinoAlvo {
+  border-color: var(--green-accent);
+  box-shadow: 0 0 0 3px rgba(83, 188, 34, .35), 0 10px 24px rgba(15, 42, 61, .12);
+  transform: translateY(-4px) scale(1.04);
+}
+.destinoCard:focus-visible { outline: 3px solid var(--blue-primary); outline-offset: 3px; }
+.destinoCard:disabled { cursor: default; }
 
 .destinoCard span {
   font-size: 0.9rem;
@@ -184,4 +215,7 @@
 @media (max-width: 600px) {
   .stage { margin: 8px 12px 32px; padding: 20px 14px; border-radius: 22px; }
   .stage::after { background: rgba(255, 255, 255, .72); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .itemArrastavel, .destinoCard { transition: none; }
 }
