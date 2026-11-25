@@ -85,7 +85,12 @@
   .results { grid-template-columns: minmax(0, 1fr); gap: 16px; }
   .panel { height: 380px; padding: 18px; }
   .mapArea { height: 480px; }
+  /* Card do ponto selecionado, entre a lista e o mapa (no desktop ele fica por cima do mapa) */
+  .mobileCard { min-width: 0; scroll-margin: 76px 0 16px; animation: cardIn .2s ease-out; }
+  .mobileCard > * { width: 100%; }
 }
+@keyframes cardIn { from { opacity: 0; transform: translateY(-6px); } }
+@media (prefers-reduced-motion: reduce) { .mobileCard { animation: none; } }
 @media (max-width: 480px) {
   .page { padding: 16px 12px 20px; }
   .controls { padding: 14px; }

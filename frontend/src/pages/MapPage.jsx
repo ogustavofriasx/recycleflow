@@ -17,6 +17,21 @@ const byName = (a, b) => a.localeCompare(b, 'pt-BR');
 // ("Logística reversa" viraria "Logística reversas").
 const plural = (t) => (/\s/.test(t) || t.endsWith('s') ? t : `${t}s`);
 
+// Mesmo limite do CSS (MapPage.module.css), onde lista e mapa passam a ficar empilhados
+const MOBILE_QUERY = '(max-width: 800px)';
+
+function useMediaQuery(query) {
+  const [matches, setMatches] = useState(() => window.matchMedia(query).matches);
+  useEffect(() => {
+    const mql = window.matchMedia(query);
+    const onChange = () => setMatches(mql.matches);
+    onChange();
+    mql.addEventListener('change', onChange);
+    return () => mql.removeEventListener('change', onChange);
+  }, [query]);
+  return matches;
+}
+
 export default function MapPage() {
   // Filtros de material, bairro e tipo ficam na URL: /mapa?material=7&bairro=Cervezão&tipo=Ecoponto
   const [searchParams, setSearchParams] = useSearchParams();
@@ -33,7 +48,7 @@ export default function MapPage() {
   const [selectedId, setSelectedId] = useState(null);
   const location = useUserLocation();
   const [picking, setPicking] = useState(false); // modo "escolher no mapa"
-  const mapRef = useRef(null);
+  const cardRef = useRef(null);
 
   // Opções dos filtros (uma vez)
   useEffect(() => {
@@ -104,15 +119,18 @@ export default function MapPage() {
 
   const selected = filtered.find((p) => p.id === selectedId) ?? null;
 
-  // No celular a lista fica em cima do mapa: ao escolher um ponto, rola até o mapa pra mostrar o card
-  const selectFromList = (id) => {
-    const next = id === selectedId ? null : id;
-    setSelectedId(next);
-    if (next != null && window.matchMedia('(max-width: 800px)').matches) {
-      const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      mapRef.current?.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
-    }
-  };
+  // Clicar de novo no mesmo ponto (na lista ou no pino) fecha o card
+  const toggleSelected = (id) => setSelectedId((atual) => (atual === id ? null : id));
+
+  // No celular o card não cabe por cima do mapa: ele aparece entre a lista e o mapa.
+  // Ao escolher um ponto, rola só o necessário para o card ficar visível.
+  const isMobile = useMediaQuery(MOBILE_QUERY);
+  useEffect(() => {
+    if (!isMobile || selectedId == null) return;
+    const smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    cardRef.current?.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'nearest' });
+  }, [isMobile, selectedId]);
+
   const semCoordenada = filtered.filter((p) => !p.position).length;
   const notice =
     !loading && !error && semCoordenada
@@ -189,15 +207,20 @@ export default function MapPage() {
                   point={p}
                   divider={i > 0}
                   selected={p.id === selectedId}
-                  // Clicar de novo no mesmo ponto fecha o card
-                  onClick={() => selectFromList(p.id)}
+                  onClick={() => toggleSelected(p.id)}
                 />
               ))
             )}
           </div>
         </aside>
 
-        <div className={styles.mapArea} ref={mapRef}>
+        {isMobile && selected && (
+          <div className={styles.mobileCard} ref={cardRef}>
+            <PointPopup point={selected} onClose={() => setSelectedId(null)} />
+          </div>
+        )}
+
+        <div className={styles.mapArea}>
           <MapView
             points={filtered}
             selectedId={selectedId}
@@ -213,7 +236,7 @@ export default function MapPage() {
                 : undefined
             }
           >
-            {selected && <PointPopup point={selected} onClose={() => setSelectedId(null)} />}
+            {!isMobile && selected && <PointPopup point={selected} onClose={() => setSelectedId(null)} />}
           </MapView>
         </div>
       </div>
