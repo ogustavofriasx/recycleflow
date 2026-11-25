@@ -1,0 +1,23 @@
+# Blueprint do Render para a API do RecycleFlow (FastAPI).
+# No Render: New > Blueprint > escolher este repositório. O frontend vai no Vercel
+# (ver frontend/vercel.json), que repassa /api/* para esta API.
+services:
+  - type: web
+    name: recycleflow-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.13"
+      # String de conexão do Neon (use a "pooled"). Preenchida no painel, nunca no repositório.
+      - key: URL
+        sync: false
+      # Segredo dos tokens do painel admin: o Render gera um valor aleatório na criação.
+      - key: ADMIN_TOKEN_SECRET
+        generateValue: true

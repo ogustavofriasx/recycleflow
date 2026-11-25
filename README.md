@@ -38,7 +38,7 @@ Na primeira vez, crie o ambiente virtual e instale as dependências:
 ```powershell
 python -m venv venv
 .\venv\Scripts\Activate.ps1
-pip install -r assets/requirements.txt
+pip install -r backend/requirements.txt
 ```
 
 Nas próximas vezes, basta ativar o ambiente virtual e subir a API:
@@ -68,6 +68,45 @@ npm run dev
 Abra o endereço mostrado pelo Vite (normalmente `http://localhost:5173`). Em desenvolvimento, as
 chamadas para `/api` são redirecionadas pelo Vite para o backend em `localhost:8000`, então o
 backend precisa estar rodando para as páginas carregarem os dados.
+
+## Deploy
+
+A publicação usa três serviços, todos com plano gratuito:
+
+| Parte | Serviço | Configuração |
+|---|---|---|
+| Frontend (React) | Vercel | `frontend/vercel.json` |
+| API (FastAPI) | Render | `render.yaml` |
+| Banco (PostgreSQL + PostGIS) | Neon | já em uso |
+
+O frontend continua chamando `/api/...`, como em desenvolvimento. No Vercel, a regra de
+`frontend/vercel.json` repassa essas chamadas para a API no Render, então o navegador vê um
+único endereço e não é preciso configurar CORS. A segunda regra devolve o `index.html` para
+qualquer outra rota, para que links diretos como `/mapa` ou `/admin` funcionem.
+
+Os dois serviços publicam sozinhos a cada push na branch `main`.
+
+### API no Render
+
+1. Em [render.com](https://render.com), entre com o GitHub e escolha **New → Blueprint**.
+2. Selecione este repositório. O Render lê o `render.yaml` e cria o serviço `recycleflow-api`.
+3. Quando pedir a variável `URL`, cole a string de conexão do Neon (use a versão *pooled*).
+   O `ADMIN_TOKEN_SECRET` é gerado automaticamente.
+4. Ao terminar, confira `https://<seu-servico>.onrender.com/docs`.
+
+No plano gratuito, a API "dorme" após cerca de 15 minutos sem acesso e o primeiro acesso
+seguinte demora de 30 a 50 segundos. Antes de uma apresentação, abra o site alguns minutos antes.
+
+### Frontend no Vercel
+
+1. Em [vercel.com](https://vercel.com), entre com o GitHub e escolha **Add New → Project**.
+2. Selecione este repositório e, em **Root Directory**, escolha `frontend`.
+   O restante (Vite, `npm run build`, pasta `dist`) vem do `vercel.json`.
+3. Se o endereço do Render não for exatamente `https://recycleflow-api.onrender.com`, ajuste o
+   destino da regra `/api/(.*)` em `frontend/vercel.json` e faça push.
+
+O Vercel cria uma prévia para cada pull request. As prévias usam a mesma API e o mesmo banco
+de produção: cuidado ao testar o painel administrativo nelas.
 
 ## Jogo de separação
 
