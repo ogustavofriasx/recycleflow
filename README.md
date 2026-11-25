@@ -159,3 +159,12 @@ de modo que o acesso possa ser revogado alterando `usuario.papel` ou `usuario.at
 Os endpoints de administração ficam sob `/admin`. Os registros públicos existentes usam as tabelas
 do schema atual; aplique `backend/db/schema.sql` e as migrações já existentes antes de ativar o
 painel em um banco ainda não preparado.
+
+## Licença
+
+O código do RecycleFlow está sob a [licença MIT](LICENSE).
+
+A fonte [Poppins](https://github.com/itfoundry/Poppins), incluída em
+`frontend/public/assets/fonts/`, é distribuída sob a SIL Open Font License 1.1; o texto
+da licença acompanha os arquivos da fonte em
+[`frontend/public/assets/fonts/OFL.txt`](frontend/public/assets/fonts/OFL.txt).
