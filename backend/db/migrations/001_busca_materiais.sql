@@ -1,6 +1,6 @@
 -- ============================================================================
 -- RECYCLEFLOW | Migracao 001 - Busca de materiais
--- Executar APOS schema.sql (e, opcionalmente, seed.sql).
+-- Executar APOS schema.sql. (O seed.sql de demonstracao fica na branch buildando.)
 -- Pode ser executada mais de uma vez: nao duplica registros.
 --
 -- O que faz:
